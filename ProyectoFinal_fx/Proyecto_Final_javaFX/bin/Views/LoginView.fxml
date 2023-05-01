@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="224.0" prefWidth="569.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.LoginController">
+   <children>
+      <Label layoutX="109.0" layoutY="34.0" text="Ingrese la identificacion" />
+      <Label layoutX="109.0" layoutY="84.0" text="Ingrese la contraseña" />
+      <TextField fx:id="txtIdentificacionLogin" layoutX="298.0" layoutY="30.0" prefHeight="25.0" prefWidth="192.0" />
+      <PasswordField fx:id="txtContraseniaLogin" layoutX="298.0" layoutY="80.0" prefHeight="25.0" prefWidth="192.0" />
+      <Button fx:id="btnIniciar" layoutX="274.0" layoutY="186.0" mnemonicParsing="false" onAction="#showVentanaAdministrador" text="Iniciar" />
+      <Button fx:id="txtCerrarLogin" layoutX="401.0" layoutY="186.0" mnemonicParsing="false" onAction="#cerrarLogin" text="Cerrar" />
+      <Label layoutX="97.0" layoutY="125.0" text="No está registrado? registrese aqui: " />
+      <Button fx:id="btnRegistrar" layoutX="350.0" layoutY="121.0" mnemonicParsing="false" onAction="#abrirGestionAdmin" text="Registrarse" />
+      <Separator layoutX="22.0" layoutY="172.0" prefHeight="0.0" prefWidth="538.0" />
+      <Button fx:id="btnVolver" layoutX="146.0" layoutY="186.0" mnemonicParsing="false" onAction="#showVentanaPrincipal" text="Volver" />
+   </children>
+</AnchorPane>
