@@ -1,0 +1,35 @@
+Pendientes del proyecto
+
+1. Crear login Empleado: Completado
+	Login interfaz
+	Si el empleado no está registrado, se abre el login del administrador para que lo registre
+	
+2. Eliminar empleado: Completado
+	Comunicacion con aplicacion->concesionario
+
+2. CRUD Clientes:
+	Generar todo el funcionamiento de los botones
+	Comunicacion aplicacion->Concesionario
+	Actualizacion de las tablas
+3. CRUD vehiculos:
+	Añadir comboBox combustible y los demas campos que esto habilita(Hecho)
+	Logica de los comboBox, que dependiendo del vehiculo que se selecciona se seteen los campos de textos 
+	Registrar los vehiculos y actualizar la tabla
+	Crear los botones que al seleccionar un vehiculo este la opcion de eliminar, alquilar o vender 
+	Eliminacion de los vehiculos 
+4.Transacciones:
+	Creacion de esta interfaz, esta estaria relacionada con las compras, ventas o alquiler de los vehiculos
+	
+5. Compra de vehiculos:
+	Interfaz de compra de vehiculos
+	Logica de todo este funcionamiento
+6. Reportes del empleado(Adminitrador):
+	El administrador es el encargado de estos reportes, por lo que me imagino se realiza una especie de diario, ejemplo, 	el empleado Juan hizo una venta, el empleado tal realizo el alquiler de un vehiculo 
+	
+7. Imagenes de los vehiculos
+8. Serializacion
+9. css
+
+
+
+
