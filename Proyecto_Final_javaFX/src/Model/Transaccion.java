@@ -7,6 +7,7 @@ public class Transaccion {
 	private String fecha;
 	private double total;
 	private String codigo;
+	private Vehiculo vehiculoPrestado;
 	private List<DetalleTransaccion> listaDetalles= new ArrayList<>();
 	/**
 	 * @param fecha
@@ -18,6 +19,25 @@ public class Transaccion {
 		this.total = total;
 		this.codigo = codigo;
 	}
+
+
+
+	/**
+	 * @param fecha
+	 * @param total
+	 * @param codigo
+	 * @param vehiculoPrestado
+	 * @param listaDetalles
+	 */
+	public Transaccion(String fecha, double total, String codigo, Vehiculo vehiculoPrestado, List<DetalleTransaccion> listaDetalles) {
+		super();
+		this.fecha = fecha;
+		this.total = total;
+		this.codigo = codigo;
+		this.vehiculoPrestado = vehiculoPrestado;
+		this.listaDetalles = listaDetalles;
+	}
+
 	/**
 	 *
 	 */

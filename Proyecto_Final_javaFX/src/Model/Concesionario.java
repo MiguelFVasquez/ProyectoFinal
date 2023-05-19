@@ -5,16 +5,16 @@ package Model;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.crypto.dsig.keyinfo.RetrievalMethod;
-
+import java.util.stream.Collectors;
 import Exceptions.AdministradorException;
 import Exceptions.ClienteException;
 import Exceptions.EmpleadoException;
+import Exceptions.TransaccionException;
 import Exceptions.VehiculoException;
 
 /**
  * @author Juan Miguel
+ * @author Santiago Ovalle
  *
  */
 public class Concesionario {
@@ -25,20 +25,13 @@ public class Concesionario {
 	private List<Empleado> listaEmpleados= new ArrayList<>();
 	private List<Transaccion> listaTransacciones= new ArrayList<>();
 	private List<Cliente> listaClientes= new ArrayList<Cliente>();
-
+	private List<Persona> listaPersonas= new ArrayList<>();
 	public Concesionario (){
 
 	}
 
 	public Concesionario(String nombre) {
 		this.nombre = nombre;
-		Administrador administrador1= new Administrador("Miguel", "florez", "1010", "1234");
-		Administrador administrador2= new Administrador("Miguel", "florez", "2314", "12345");
-		listaAdministradores.add(administrador1);
-
-
-
-
 	}
 
 
@@ -92,6 +85,14 @@ public class Concesionario {
 
 	public void setListaTransacciones(List<Transaccion> listaTransacciones) {
 		this.listaTransacciones = listaTransacciones;
+	}
+
+	public List<Persona> getListaPersonas() {
+		return listaPersonas;
+	}
+
+	public void setListaPersonas(List<Persona> listaPersonas) {
+		this.listaPersonas = listaPersonas;
 	}
 
 	@Override
@@ -739,28 +740,114 @@ public class Concesionario {
 
 		return creado;
 	}
+	/**
+	 *
+	 * @param marca
+	 * @param modelo
+	 * @return
+	 */
+	private Vehiculo obtenerVehiculo(String marca, String modelo) {
+		return (Vehiculo) listaVehiculos.stream().filter(v -> v.getMarca().equals(marca) && v.getModelo().equals(modelo));
+
+	}
+	/**
+	 *
+	 * @param vehiculoEliminar
+	 * @return
+	 * @throws VehiculoException
+	 */
+	public boolean eliminarVehiculo(Vehiculo vehiculoEliminar) throws VehiculoException {
+
+		boolean eliminado = false;
+		Vehiculo vehiculoEncontrado= obtenerVehiculo(vehiculoEliminar.getMarca(), vehiculoEliminar.getModelo());
+		if (vehiculoEncontrado==null) {
+			throw new VehiculoException("El vehiculo que desea eliminar no se encuentra registrado");
+		}else {
+			eliminado= true;
+			listaVehiculos.remove(vehiculoEncontrado);
+		}
+
+		return eliminado;
+	}
 
 
+
+//----------------------------------------------------Transacciones----------------------------------------------------------------------------
+	/**
+	 *
+	 * @param codigo
+	 * @return
+	 */
+	public Transaccion obtenerTransaccion(String codigo){
+		return (Transaccion) listaTransacciones.stream().filter(t -> t.getCodigo().equals(codigo));
+	}
+	/**
+	 *
+	 * @param codigo
+	 * @return
+	 */
+	public boolean verificarTransaccion(String codigo){
+		boolean encontrada= false;
+
+		List<Transaccion> transaccionesEncontradas = (List<Transaccion>) this.listaTransacciones.stream()
+				.filter(t ->t.getCodigo().equals(codigo))
+				.collect(Collectors.toList());			;
+
+		if (!transaccionesEncontradas.isEmpty()) {
+			encontrada= true;
+		}
+
+		return encontrada;
+	}
 	/**
 	 *
 	 * @param identificacionEmpleado
-	 * @param vehiculoEliminar
+	 * @param fecha
+	 * @param total
+	 * @param codigo
 	 * @return
 	 * @throws EmpleadoException
-	 * @throws VehiculoException
+	 * @throws TransaccionException
 	 */
-	public boolean eliminarVehiculo(String  identificacionEmpleado,Vehiculo vehiculoEliminar) throws EmpleadoException, VehiculoException {
-		boolean eliminado= false;
+	public boolean crearTransaccion(String identificacionEmpleado, String fecha, double total , String codigo) throws EmpleadoException, TransaccionException{
+		boolean creada= false;
+
 		Empleado empleadoAux= obtenerEmpleado(identificacionEmpleado);
+		Transaccion nuevaTransaccion= new Transaccion(fecha, total, codigo);
 		if (empleadoAux==null) {
 			throw new EmpleadoException("El empleado no esta registrado");
 		}
-		if (empleadoAux.eliminarVehiculo(vehiculoEliminar)) {
-			eliminado= true;
-			this.listaVehiculos.remove(vehiculoEliminar);
+
+		if (empleadoAux.crearTransaccion(nuevaTransaccion)) {
+			creada= true;
+			listaTransacciones.add(nuevaTransaccion);
 		}
-		return eliminado;
+
+
+		return creada;
 	}
+	/**
+	 *
+	 * @param transaccionEliminar
+	 * @return
+	 * @throws TransaccionException
+	 */
+	public boolean eliminarTransaccion(Transaccion transaccionEliminar) throws TransaccionException{
+		boolean eliminado= false;
+		Transaccion transaccionEncontrada= obtenerTransaccion(transaccionEliminar.getCodigo());
+		if (transaccionEncontrada==null) {
+			throw new TransaccionException("La transaccion que desea eliminar no se encuentra registrada");
+		}else {
+			eliminado= true;
+			listaTransacciones.remove(transaccionEncontrada);
+		}
+
+
+		return eliminado;
+
+	}
+
+
 
 
 }

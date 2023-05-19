@@ -81,6 +81,14 @@ public class EmpleadoController implements Initializable {
     private Button btnRegistrar;
 
     @FXML
+    private Button btnVender;
+
+    @FXML
+    private Button btnAlquilar;
+    @FXML
+    private Button btnEliminarAuto;
+
+    @FXML
     private TextField txtNombreCliente;
     @FXML
     private TextField txtApellidoCliente;
@@ -316,7 +324,7 @@ public class EmpleadoController implements Initializable {
 			mostrarMensaje("Cliente seleccion", "Cliente seleccion", "No ha seleccionado ningun cliente, por lo tanto no lo puede eliminar", AlertType.WARNING);
 		}
     }
-
+//----------------------------------------------------VEHICULOS-----------------------------------------------------------------------
     /**
      * Se obtiene el tipo de vehiculo que selecciono del comboBox, esto para habilitar los diferentes campos de texto
      * No se setea ningun comboBox porque no es necesario, ya que de todos los vehiculos se necesita la informacion que dan estos
@@ -594,11 +602,24 @@ public class EmpleadoController implements Initializable {
     }
 
 
+    @FXML
+    void registrarVehiculo(ActionEvent event) {
 
+    }
 
 
     @FXML
-    void registrarVehiculo(ActionEvent event) {
+    void venderAuto(ActionEvent event) {
+
+    }
+
+    @FXML
+    void alquilarAuto(ActionEvent event) {
+
+    }
+
+    @FXML
+    void eliminarAuto(ActionEvent event) {
 
     }
 

@@ -150,16 +150,12 @@
                             <TableColumn prefWidth="36.0" text="C2" />
                           </columns>
                         </TableView>
-                        <Button layoutX="390.0" layoutY="542.0" mnemonicParsing="false" text="Vender" />
-                        <Button layoutX="519.0" layoutY="542.0" mnemonicParsing="false" text="Alquilar" />
+                        <Button fx:id="btnVender" layoutX="390.0" layoutY="542.0" mnemonicParsing="false" onAction="#venderAuto" text="Vender" />
+                        <Button fx:id="btnAlquilar" layoutX="519.0" layoutY="542.0" mnemonicParsing="false" onAction="#alquilarAuto" text="Alquilar" />
+                        <Button fx:id="btnEliminarAuto" layoutX="644.0" layoutY="542.0" mnemonicParsing="false" onAction="#eliminarAuto" text="Eliminar" />
                      </children>
                   </AnchorPane>
               </content>
-            </Tab>
-            <Tab text="Ventas">
-               <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-               </content>
             </Tab>
             <Tab text="Compras">
                <content>
@@ -168,7 +164,16 @@
             </Tab>
             <Tab text="Gestion de transacciones">
                <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Label layoutX="46.0" layoutY="34.0" text="Inromacion de la transacción" />
+                        <Label layoutX="54.0" layoutY="115.0" text="Código" />
+                        <Label layoutX="54.0" layoutY="162.0" text="Fecha" />
+                        <Label layoutX="54.0" layoutY="201.0" prefHeight="28.0" prefWidth="39.0" text="Total" />
+                        <TextField layoutX="199.0" layoutY="111.0" prefHeight="25.0" prefWidth="176.0" />
+                        <DatePicker layoutX="199.0" layoutY="158.0" />
+                        <TextField layoutX="199.0" layoutY="217.0" prefHeight="25.0" prefWidth="176.0" />
+                     </children></AnchorPane>
                </content>
             </Tab>
         </tabs>

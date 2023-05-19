@@ -3,10 +3,17 @@ package controllers;
 import Exceptions.AdministradorException;
 import Exceptions.ClienteException;
 import Exceptions.EmpleadoException;
+import Exceptions.TransaccionException;
+import Exceptions.VehiculoException;
 import Model.Administrador;
 import Model.Cliente;
 import Model.Concesionario;
 import Model.Empleado;
+import Model.TipoCombustible;
+import Model.TipoEstado;
+import Model.TipoTransmicion;
+import Model.Transaccion;
+import Model.Vehiculo;
 
 public class Singleton {
 
@@ -119,6 +126,76 @@ public class Singleton {
 			return concesionario.actualizarEmpleado(idAdmin, nombre, apellido, cedula);
 		}
 
+//--------------------------------------------METODOS DE VEHICULOS----------------------------------------------------
+		public boolean crearMoto(String identificacionEmpleado, String marca, String modelo, String cambios, double velMaxima, String cilindraje,TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado) throws EmpleadoException, VehiculoException{
+			return concesionario.crearMoto(identificacionEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado);
+		}
+
+		public boolean crearSedan(String identificacionEmpleado,String marca, String modelo, String cambios, double velMaxima, String cilindraje,
+				TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, int num_pasajeros,
+				int num_Puertas, int cap_Maletero, boolean aire_Acondicionado, boolean cam_Reversa, int num_Bolsas,
+				boolean abs, boolean sen_Colision, boolean sen_Trafico_Cruzado, boolean asistente_Carril) throws VehiculoException, EmpleadoException{
+
+			return concesionario.crearSedan(identificacionEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs, sen_Colision, sen_Trafico_Cruzado, asistente_Carril);
+		}
+		public boolean crearDeportivo(String identificacionEmpleado,String marca, String modelo, String cambios, double velMaxima, String cilindraje,
+				TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, int num_pasajeros,
+				int num_Puertas, int num_Bolsas, double num_Caballos_Fuerza, double tiempo_en_100KM) throws EmpleadoException, VehiculoException{
+
+			return concesionario.crearDeportivo(identificacionEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, num_pasajeros, num_Puertas, num_Bolsas, num_Caballos_Fuerza, tiempo_en_100KM);
+		}
+		public boolean crearCamioneta(String identificacionEmpleado,String marca, String modelo, String cambios, double velMaxima, String cilindraje,
+				TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, int num_pasajeros,
+				int num_Puertas, int cap_Maletero, boolean aire_Acondicionado, boolean cam_Reversa, int num_Bolsas,
+				boolean abs, boolean sen_Colision, boolean sen_Trafico_Cruzado, boolean asistente_Carril,
+				boolean esCuatroxCuatro) throws VehiculoException, EmpleadoException {
+
+			return concesionario.crearCamioneta(identificacionEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs, sen_Colision, sen_Trafico_Cruzado, asistente_Carril, esCuatroxCuatro);
+		}
+		public boolean crearPickUp(String identificacionEmpleado, String marca, String modelo, String cambios, double velMaxima, String cilindraje,
+				TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, int num_pasajeros,
+				int num_Puertas, int num_Bolsas, int capacidadCarga, boolean aire_Acondicionado, boolean cam_Reversa,
+				boolean vel_Crucero, boolean abs, boolean esCuatroPorCuatro) throws EmpleadoException, VehiculoException {
+
+			return concesionario.crearPickUp(identificacionEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, num_pasajeros, num_Puertas, num_Bolsas, capacidadCarga, aire_Acondicionado, cam_Reversa, vel_Crucero, abs, esCuatroPorCuatro);
+
+		}
+
+		public boolean crearVan(String identificacionEmpleado, String marca, String modelo, String cambios, double velMaxima, String cilindraje,
+				TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, int num_pasajeros,
+				int num_Puertas, int cap_Maletero, boolean aire_Acondicionado, boolean cam_Reversa, int num_Bolsas,
+				boolean abs) throws EmpleadoException, VehiculoException {
+
+			return concesionario.crearVan(identificacionEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs);
+
+		}
+		public boolean crearBus(String identificacionEmpleado, String marca, String modelo, String cambios, double velMaxima, String cilindraje,
+				TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, int num_pasajeros,
+				int num_Puertas, int cap_Maletero, boolean aire_Acondicionado, boolean cam_Reversa, boolean vel_Crucero,
+				int num_Bolsas, boolean abs, int num_ejes, int num_salidas_emergencia) throws EmpleadoException, VehiculoException {
+
+			return concesionario.crearBus(identificacionEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, vel_Crucero, num_Bolsas, abs, num_ejes, num_salidas_emergencia);
+		}
+
+		public boolean crearCamion(String identificacionEmpleado, String marca, String modelo, String cambios, double velMaxima, String cilindraje,
+				TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, boolean aire_Acondicionado,
+				boolean abs, int num_ejes, String tipo_Camion) throws EmpleadoException, VehiculoException {
+
+			return concesionario.crearCamion(identificacionEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, aire_Acondicionado, abs, num_ejes, tipo_Camion);
+		}
 
 
+		public boolean eliminarVehiculo(Vehiculo vehiculoSeleccionado) throws VehiculoException{
+			return concesionario.eliminarVehiculo(vehiculoSeleccionado);
+		}
+
+//---------------------------------TRANSACCIONES-----------------------------------------
+
+		public boolean crearTransaccion(String identificacionEmpleado, String fecha, double total , String codigo) throws EmpleadoException, TransaccionException{
+			return concesionario.crearTransaccion(identificacionEmpleado, fecha, total, codigo);
+		}
+
+		public boolean eliminarTransaccion(Transaccion transaccionEliminar) throws TransaccionException{
+			return concesionario.eliminarTransaccion(transaccionEliminar);
+		}
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import Exceptions.ClienteException;
+import Exceptions.TransaccionException;
 import Exceptions.VehiculoException;
 
 public class Empleado extends Persona {
@@ -337,6 +338,7 @@ public class Empleado extends Persona {
 	 * @throws VehiculoException
 	 */
 	public boolean eliminarVehiculo(Vehiculo vehiculoEliminar) throws VehiculoException {
+
 		boolean eliminado = false;
 		Vehiculo vehiculoEncontrado= obtenerVehiculo(vehiculoEliminar.getMarca(), vehiculoEliminar.getModelo());
 		if (vehiculoEncontrado==null) {
@@ -347,6 +349,51 @@ public class Empleado extends Persona {
 		}
 
 		return eliminado;
+	}
+
+//-------------------------------------------------TRANSACCIONES---------------------------------------------------------------------
+	/**
+	 *
+	 * @param codigo
+	 * @return
+	 */
+	public Transaccion obtenerTransaccion(String codigo){
+		return (Transaccion) listaTransaccion.stream().filter(t -> t.getCodigo().equals(codigo));
+	}
+	/**
+	 *
+	 * @param codigo
+	 * @return
+	 */
+	public boolean verificarTransaccion(String codigo){
+		boolean encontrada= false;
+
+		List<Transaccion> transaccionesEncontradas = (List<Transaccion>) this.listaTransaccion.stream()
+				.filter(t ->t.getCodigo().equals(codigo))
+				.collect(Collectors.toList());			;
+
+		if (!transaccionesEncontradas.isEmpty()) {
+			encontrada= true;
+		}
+
+		return encontrada;
+	}
+
+	/**
+	 *
+	 * @param nuevaTransaccion
+	 * @return
+	 * @throws TransaccionException
+	 */
+	public boolean crearTransaccion(Transaccion nuevaTransaccion) throws TransaccionException{
+		boolean creada= false;
+		if (verificarTransaccion(nuevaTransaccion.getCodigo())) {
+			throw new TransaccionException("La transaccion ya se encuentra registrada");
+		}else {
+			creada= true;
+			listaTransaccion.add(nuevaTransaccion);
+		}
+		return creada;
 	}
 
 }
