@@ -395,5 +395,24 @@ public class Empleado extends Persona {
 		}
 		return creada;
 	}
+//---------------------------------------VENTA Y ALQUILER DE VEHICULOS----------------------------------------------------
+	/**
+	 * Este metodo primero verifica que el vehiculo que se quiere vender si se encuentre registrado en la base de datos, si no lo está retorna false
+	 * Si esta como se está vendiendo el metodo lo elimina ya del sistama y de la lista de vehiculos
+	 * @param vehiculoVenta
+	 * @return
+	 * @throws VehiculoException
+	 */
 
+	public boolean venderVehiculo(Vehiculo vehiculoVenta) throws VehiculoException {
+		boolean vendido= false;
+		Vehiculo vehiculoEncontrado= obtenerVehiculo(vehiculoVenta.getMarca(), vehiculoVenta.getModelo());
+		if (vehiculoEncontrado==null) {
+			throw new VehiculoException("El vehiculo que desea vender, no se encuentra registrado");
+		}else {
+			vendido=true;
+			listaVehiculos.remove(vehiculoEncontrado);
+		}
+		return vendido;
+	}
 }

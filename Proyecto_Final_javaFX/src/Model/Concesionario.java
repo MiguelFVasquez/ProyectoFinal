@@ -809,21 +809,27 @@ public class Concesionario {
 	 * @throws EmpleadoException
 	 * @throws TransaccionException
 	 */
-	public boolean crearTransaccion(String identificacionEmpleado, String fecha, double total , String codigo) throws EmpleadoException, TransaccionException{
+	public boolean crearTransaccion(String identificacionEmpleado, TipoTransaccion tipoTransaccion, String fecha, double total , String codigo, String cantDias) throws EmpleadoException, TransaccionException{
 		boolean creada= false;
 
 		Empleado empleadoAux= obtenerEmpleado(identificacionEmpleado);
-		Transaccion nuevaTransaccion= new Transaccion(fecha, total, codigo);
+		//Transaccion nuevaTransaccion= new Transaccion(fecha, total, codigo, tipoTransaccion, cantDias);
 		if (empleadoAux==null) {
 			throw new EmpleadoException("El empleado no esta registrado");
 		}
 
-		if (empleadoAux.crearTransaccion(nuevaTransaccion)) {
-			creada= true;
-			listaTransacciones.add(nuevaTransaccion);
+		if (tipoTransaccion.equals(TipoTransaccion.COMPRA)) {
+			Transaccion nuevaTransaccion= new Transaccion(fecha, total, codigo, tipoTransaccion, null);
+			creada= empleadoAux.crearTransaccion(nuevaTransaccion);
+			return creada;
+
+		}else if (tipoTransaccion.equals(TipoTransaccion.ALQUILER)) {
+			Transaccion nuevaTransaccion= new Transaccion(fecha, total, codigo, tipoTransaccion, cantDias);
+			creada= empleadoAux.crearTransaccion(nuevaTransaccion);
+			return creada;
 		}
 
-
+		//return obtenerEmpleado(identificacionEmpleado)!=null && obtenerEmpleado(identificacionEmpleado).crearTransaccion(nuevaTransaccion) ? true : false;
 		return creada;
 	}
 	/**
@@ -841,13 +847,40 @@ public class Concesionario {
 			eliminado= true;
 			listaTransacciones.remove(transaccionEncontrada);
 		}
-
-
 		return eliminado;
 
 	}
 
+//-----------------------------------------VENTA Y ALQUILER DE LOS VEHICULOS---------------------------------------------------
 
+	/**
+	 * En este metodod se verifica primero que el empleado exista, esto por medio del metodo obtenerEmpleado, si este toma un valor nulo, retorna false
+	 * En cambio, si es diferente de null y el retusultado del metodo de venderVehiculo es true, este metodo retorna true
+	 * @param idEmpleado
+	 * @param vehiculoVenta
+	 * @return
+	 * @throws VehiculoException
+	 * @throws EmpleadoException
+	 */
+	public boolean venderVehiculo(String idEmpleado, Vehiculo vehiculoVenta) throws VehiculoException, EmpleadoException {
+		Empleado empleadoAux=obtenerEmpleado(idEmpleado);
+		if (empleadoAux== null){
+			throw new EmpleadoException("El empleado no esta registrado");
+		}
+		if (empleadoAux.venderVehiculo(vehiculoVenta)) {
+			listaVehiculos.remove(vehiculoVenta);
+			return true;
+		}
+
+		return false;
+		//return  obtenerEmpleado(idEmpleado)!=null && obtenerEmpleado(idEmpleado).venderVehiculo(vehiculoVenta) ? true : false;
+	}
+	public boolean alquilarVehiculo(String idEmpleado,Vehiculo  vehiculoAlquiler) {
+		boolean alquilado= false;
+
+
+		return alquilado;
+	}
 
 
 }

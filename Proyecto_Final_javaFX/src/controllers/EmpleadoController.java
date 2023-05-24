@@ -1,14 +1,9 @@
 package controllers;
 
 import java.net.URL;
-import java.util.Observable;
 import java.util.ResourceBundle;
 
 import javax.swing.JOptionPane;
-
-import org.omg.PortableServer.ID_ASSIGNMENT_POLICY_ID;
-
-import com.sun.javafx.css.CssError.StringParsingError;
 
 import Exceptions.ClienteException;
 import Exceptions.EmpleadoException;
@@ -29,7 +24,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;

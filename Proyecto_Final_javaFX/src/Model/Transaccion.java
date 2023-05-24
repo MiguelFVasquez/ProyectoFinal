@@ -7,19 +7,28 @@ public class Transaccion {
 	private String fecha;
 	private double total;
 	private String codigo;
-	private Vehiculo vehiculoPrestado;
+	private Vehiculo vehiculoTransaccion;
+	private TipoTransaccion tipoTransaccion;
+	private String cantDias;
 	private List<DetalleTransaccion> listaDetalles= new ArrayList<>();
+
+
+
+
 	/**
 	 * @param fecha
 	 * @param total
 	 * @param codigo
+	 * @param tipoTransaccion
 	 */
-	public Transaccion(String fecha, double total, String codigo) {
+	public Transaccion(String fecha, double total, String codigo, TipoTransaccion tipoTransaccion, String cantDias) {
+		super();
 		this.fecha = fecha;
 		this.total = total;
 		this.codigo = codigo;
+		this.tipoTransaccion = tipoTransaccion;
+		this.cantDias= cantDias;
 	}
-
 
 
 	/**
@@ -34,9 +43,10 @@ public class Transaccion {
 		this.fecha = fecha;
 		this.total = total;
 		this.codigo = codigo;
-		this.vehiculoPrestado = vehiculoPrestado;
+		this.vehiculoTransaccion = vehiculoPrestado;
 		this.listaDetalles = listaDetalles;
 	}
+
 
 	/**
 	 *
@@ -61,12 +71,42 @@ public class Transaccion {
 	public void setCodigo(String codigo) {
 		this.codigo = codigo;
 	}
+
+	public Vehiculo getVehiculoTransaccion() {
+		return vehiculoTransaccion;
+	}
+
+	public void setVehiculoTransaccion(Vehiculo vehiculoTransaccion) {
+		this.vehiculoTransaccion = vehiculoTransaccion;
+	}
+
+	public TipoTransaccion getTipoTransaccion() {
+		return tipoTransaccion;
+	}
+
+
+	public void setTipoTransaccion(TipoTransaccion tipoTransaccion) {
+		this.tipoTransaccion = tipoTransaccion;
+	}
+
+	public String getCantDias() {
+		return cantDias;
+	}
+
+
+	public void setCantDias(String cantDias) {
+		this.cantDias = cantDias;
+	}
+
+
 	public List<DetalleTransaccion> getListaDetalles() {
 		return listaDetalles;
 	}
 	public void setListaDetalles(List<DetalleTransaccion> listaDetalles) {
 		this.listaDetalles = listaDetalles;
 	}
+
+
 	@Override
 	public String toString() {
 		return "Transaccion \nFecha: " + fecha + "\nTotal: " + total + "\nCodigo: " + codigo + "\nlista Detalles:"

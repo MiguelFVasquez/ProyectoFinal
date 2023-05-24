@@ -11,6 +11,7 @@ import Model.Concesionario;
 import Model.Empleado;
 import Model.TipoCombustible;
 import Model.TipoEstado;
+import Model.TipoTransaccion;
 import Model.TipoTransmicion;
 import Model.Transaccion;
 import Model.Vehiculo;
@@ -191,8 +192,8 @@ public class Singleton {
 
 //---------------------------------TRANSACCIONES-----------------------------------------
 
-		public boolean crearTransaccion(String identificacionEmpleado, String fecha, double total , String codigo) throws EmpleadoException, TransaccionException{
-			return concesionario.crearTransaccion(identificacionEmpleado, fecha, total, codigo);
+		public boolean crearTransaccion(String identificacionEmpleado,TipoTransaccion tipoTransaccion, String fecha, double total , String codigo, String cantDias) throws EmpleadoException, TransaccionException{
+			return concesionario.crearTransaccion(identificacionEmpleado, tipoTransaccion, fecha, total, codigo, cantDias);
 		}
 
 		public boolean eliminarTransaccion(Transaccion transaccionEliminar) throws TransaccionException{

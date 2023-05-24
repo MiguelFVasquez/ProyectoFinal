@@ -2,15 +2,6 @@ package application;
 
 import java.io.IOException;
 
-import com.sun.media.jfxmedia.events.NewFrameEvent;
-
-import Exceptions.AdministradorException;
-import Exceptions.ClienteException;
-import Exceptions.EmpleadoException;
-import Model.Administrador;
-import Model.Cliente;
-import Model.Concesionario;
-import Model.Empleado;
 import controllers.PrincipalController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
