@@ -3,12 +3,12 @@ package Model;
 import java.io.Serializable;
 
 public class Sedan extends Vehiculo implements Serializable{
-    private int num_pasajeros;
-    private int num_Puertas;
-    private int cap_Maletero;
+    private String  num_pasajeros;
+    private String num_Puertas;
+    private String cap_Maletero;
+    private String num_Bolsas;
     private boolean aire_Acondicionado;
     private boolean cam_Reversa;
-    private int num_Bolsas;
     private boolean abs;
     private boolean sen_Colision;
     private boolean sen_Trafico_Cruzado;
@@ -17,14 +17,41 @@ public class Sedan extends Vehiculo implements Serializable{
     public Sedan(){
     }
 
+    /** CONSTRUCTOR CON ATRIBUTOS DE SUPER CLASS  + ATRIBUTOS PROPIOS
+	 * @param marca
+	 * @param modelo
+	 * @param cambios
+	 * @param velMaxima
+	 * @param cilindraje
+	 * @param transmicion
+	 * @param combustible
+	 * @param estado
+	 * @param precio
+	 * @param autonimia
+	 * @param tiempoPromedioCarga
+	 * @param esEnchufable
+	 * @param esHibridoLigero
+	 * @param num_pasajeros
+	 * @param num_Puertas
+	 * @param cap_Maletero
+	 * @param aire_Acondicionado
+	 * @param cam_Reversa
+	 * @param num_Bolsas
+	 * @param abs
+	 * @param sen_Colision
+	 * @param sen_Trafico_Cruzado
+	 * @param asistente_Carril
+	 */
+	public Sedan(String marca, String modelo, String cambios, String velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonimia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero,
+			String num_pasajeros, String num_Puertas, String cap_Maletero, boolean aire_Acondicionado, boolean cam_Reversa,
+			String num_Bolsas, boolean abs, boolean sen_Colision, boolean sen_Trafico_Cruzado, boolean asistente_Carril) {
 
 
-    public Sedan(String marca, String modelo, String cambios, double velMaxima, String cilindraje,
-			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, int num_pasajeros,
-			int num_Puertas, int cap_Maletero, boolean aire_Acondicionado, boolean cam_Reversa, int num_Bolsas,
-			boolean abs, boolean sen_Colision, boolean sen_Trafico_Cruzado, boolean asistente_Carril) {
+		super(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia,
+				tiempoPromedioCarga, esEnchufable, esHibridoLigero);
 
-    	super(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado);
 		this.num_pasajeros = num_pasajeros;
 		this.num_Puertas = num_Puertas;
 		this.cap_Maletero = cap_Maletero;
@@ -39,7 +66,22 @@ public class Sedan extends Vehiculo implements Serializable{
 
 
 
-	public Sedan(int num_pasajeros, int num_Puertas, boolean aire_Acondicionado, boolean cam_Reversa, int num_Bolsas, boolean abs, boolean sen_Colision,
+
+
+
+	/**
+     * CONSTRUCTOR CON ATRIBUTOS PROPIOS
+     * @param num_pasajeros
+     * @param num_Puertas
+     * @param aire_Acondicionado
+     * @param cam_Reversa
+     * @param num_Bolsas
+     * @param abs
+     * @param sen_Colision
+     * @param sen_Trafico_Cruzado
+     * @param asistente_Carril
+     */
+	public Sedan(String num_pasajeros, String num_Puertas, boolean aire_Acondicionado, boolean cam_Reversa, String num_Bolsas, boolean abs, boolean sen_Colision,
 			boolean sen_Trafico_Cruzado, boolean asistente_Carril) {
         this.num_pasajeros = num_pasajeros;
         this.num_Puertas = num_Puertas;
@@ -52,78 +94,88 @@ public class Sedan extends Vehiculo implements Serializable{
         this.asistente_Carril = asistente_Carril;
     }
 
-    public Sedan(String marca, String modelo, String cambios, double velMaxima, String cilindraje,
-			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado) {
-		super(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado);
-		// TODO Auto-generated constructor stub
+
+    public String getNum_pasajeros() {
+		return num_pasajeros;
 	}
 
+	public void setNum_pasajeros(String num_pasajeros) {
+		this.num_pasajeros = num_pasajeros;
+	}
 
-	public int getNum_pasajeros() {
-        return num_pasajeros;
-    }
-    public void setNum_pasajeros(int num_pasajeros) {
-        this.num_pasajeros = num_pasajeros;
-    }
-    public int getNum_Puertas() {
-        return num_Puertas;
-    }
-    public void setNum_Puertas(int num_Puertas) {
-        this.num_Puertas = num_Puertas;
-    }
-    public boolean isAire_Acondicionado() {
-        return aire_Acondicionado;
-    }
-    public void setAire_Acondicionado(boolean aire_Acondicionado) {
-        this.aire_Acondicionado = aire_Acondicionado;
-    }
-    public boolean isCam_Reversa() {
-        return cam_Reversa;
-    }
-    public void setCam_Reversa(boolean cam_Reversa) {
-        this.cam_Reversa = cam_Reversa;
-    }
-    public int getNum_Bolsas() {
-        return num_Bolsas;
-    }
-    public void setNum_Bolsas(int num_Bolsas) {
-        this.num_Bolsas = num_Bolsas;
-    }
-    public boolean isAbs() {
-        return abs;
-    }
-    public void setAbs(boolean abs) {
-        this.abs = abs;
-    }
-    public boolean isSen_Colision() {
-        return sen_Colision;
-    }
-    public void setSen_Colision(boolean sen_Colision) {
-        this.sen_Colision = sen_Colision;
-    }
-    public boolean isSen_Trafico_Cruzado() {
-        return sen_Trafico_Cruzado;
-    }
-    public void setSen_Trafico_Cruzado(boolean sen_Trafico_Cruzado) {
-        this.sen_Trafico_Cruzado = sen_Trafico_Cruzado;
-    }
-    public boolean isAsistente_Carril() {
-        return asistente_Carril;
-    }
-    public void setAsistente_Carril(boolean asistente_Carril) {
-        this.asistente_Carril = asistente_Carril;
-    }
+	public String getNum_Puertas() {
+		return num_Puertas;
+	}
 
-    public int getCap_Maletero() {
-        return cap_Maletero;
-    }
-    public void setCap_Maletero(int cap_Maletero) {
-        this.cap_Maletero = cap_Maletero;
-    }
+	public void setNum_Puertas(String num_Puertas) {
+		this.num_Puertas = num_Puertas;
+	}
 
+	public String getCap_Maletero() {
+		return cap_Maletero;
+	}
 
+	public void setCap_Maletero(String cap_Maletero) {
+		this.cap_Maletero = cap_Maletero;
+	}
 
-    @Override
+	public String getNum_Bolsas() {
+		return num_Bolsas;
+	}
+
+	public void setNum_Bolsas(String num_Bolsas) {
+		this.num_Bolsas = num_Bolsas;
+	}
+
+	public boolean isAire_Acondicionado() {
+		return aire_Acondicionado;
+	}
+
+	public void setAire_Acondicionado(boolean aire_Acondicionado) {
+		this.aire_Acondicionado = aire_Acondicionado;
+	}
+
+	public boolean isCam_Reversa() {
+		return cam_Reversa;
+	}
+
+	public void setCam_Reversa(boolean cam_Reversa) {
+		this.cam_Reversa = cam_Reversa;
+	}
+
+	public boolean isAbs() {
+		return abs;
+	}
+
+	public void setAbs(boolean abs) {
+		this.abs = abs;
+	}
+
+	public boolean isSen_Colision() {
+		return sen_Colision;
+	}
+
+	public void setSen_Colision(boolean sen_Colision) {
+		this.sen_Colision = sen_Colision;
+	}
+
+	public boolean isSen_Trafico_Cruzado() {
+		return sen_Trafico_Cruzado;
+	}
+
+	public void setSen_Trafico_Cruzado(boolean sen_Trafico_Cruzado) {
+		this.sen_Trafico_Cruzado = sen_Trafico_Cruzado;
+	}
+
+	public boolean isAsistente_Carril() {
+		return asistente_Carril;
+	}
+
+	public void setAsistente_Carril(boolean asistente_Carril) {
+		this.asistente_Carril = asistente_Carril;
+	}
+
+	@Override
     public String toString() {
         return super.toString()+ "\nNumero de pasajeros: " + num_pasajeros + "\nNumero de puertas: " +
         		num_Puertas + "\nCapacidad del maletero: "+ cap_Maletero + "\nAire acondicionado: " +
@@ -134,15 +186,6 @@ public class Sedan extends Vehiculo implements Serializable{
 
 
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + num_pasajeros;
-        result = prime * result + num_Puertas;
-        result = prime * result + cap_Maletero;
-        return result;
-    }
 
 
 

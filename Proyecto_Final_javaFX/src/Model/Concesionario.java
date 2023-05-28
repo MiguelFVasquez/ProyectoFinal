@@ -11,6 +11,7 @@ import Exceptions.ClienteException;
 import Exceptions.EmpleadoException;
 import Exceptions.TransaccionException;
 import Exceptions.VehiculoException;
+import Exceptions.VentaException;
 
 /**
  * @author Juan Miguel
@@ -26,6 +27,10 @@ public class Concesionario {
 	private List<Transaccion> listaTransacciones= new ArrayList<>();
 	private List<Cliente> listaClientes= new ArrayList<Cliente>();
 	private List<Persona> listaPersonas= new ArrayList<>();
+	private List<Vehiculo> listaVehiculosAlquiladosList= new ArrayList<>();
+	private List<Vehiculo> listaVehiculosVendidosList= new ArrayList<>();
+
+
 	public Concesionario (){
 
 	}
@@ -93,6 +98,22 @@ public class Concesionario {
 
 	public void setListaPersonas(List<Persona> listaPersonas) {
 		this.listaPersonas = listaPersonas;
+	}
+
+	public List<Vehiculo> getListaVehiculosAlquiladosList() {
+		return listaVehiculosAlquiladosList;
+	}
+
+	public void setListaVehiculosAlquiladosList(List<Vehiculo> listaVehiculosAlquiladosList) {
+		this.listaVehiculosAlquiladosList = listaVehiculosAlquiladosList;
+	}
+
+	public List<Vehiculo> getListaVehiculosVendidosList() {
+		return listaVehiculosVendidosList;
+	}
+
+	public void setListaVehiculosVendidosList(List<Vehiculo> listaVehiculosVendidosList) {
+		this.listaVehiculosVendidosList = listaVehiculosVendidosList;
 	}
 
 	@Override
@@ -404,6 +425,22 @@ public class Concesionario {
 
 	}
 //----------------------------------------CRUD VEHICULOS----------------------------------------------------------------
+	/*
+	 * El funcionamiento general de los metodos de creacion de los vehiculos es el siguiente: Primero se obtiene un empleado encargado, se verifica que no sea un valor nulo
+	 * Despues, lo que se hace es evaluar el tipo de combustible del vehiculo, si es electrico, significa que no es hibrido por lo que los atributos de hibrido se setean
+	 *  como false
+	 *Si es hibrido, se verifica si es enchufable, si lo es se setea el atributo de hibridoLigero como false, si no lo es, se pasa el atributo comun y corriente
+	 *Si es diesel o gasolina, se crea un vehiculo normal, sin embargo, los atributos de electrico e hibrido se setean como nulos o false, segun corresponda
+	 *
+	 *Los vehiculos creado tienen una notacion especifica de acuerdo a su combustible
+	 *VehiculoE= vehiculo electrico
+	 *VehiculoH= vehiculo hibrido
+	 *VehiculoD= vehiculo Diesel
+	 *
+	 * */
+
+
+
 
 	/**
 	 *
@@ -416,26 +453,69 @@ public class Concesionario {
 	 * @param transmicion
 	 * @param combustible
 	 * @param estado
+	 * @param precio
+	 * @param autonomia
+	 * @param tiempoPromedioCarga
+	 * @param esEnchufable
+	 * @param esHibridoLigero
 	 * @return
 	 * @throws EmpleadoException
 	 * @throws VehiculoException
 	 */
-	public boolean crearMoto(String identificacionEmpleado, String marca, String modelo, String cambios, double velMaxima, String cilindraje,
-			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado) throws EmpleadoException, VehiculoException{
+	public boolean crearMoto(String identificacionEmpleado, String marca, String modelo, String cambios, String velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio, String autonomia, String tiempoPromedioCarga,
+			boolean esEnchufable, boolean esHibridoLigero) throws EmpleadoException, VehiculoException{
+
+
 		boolean creado= false;
 		Empleado empleadoAux= obtenerEmpleado(identificacionEmpleado);
-		Vehiculo moto= new Moto(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado);
 
 		if (empleadoAux==null) {
 			throw new EmpleadoException("El empleado no está registrado");
 		}
-		if (empleadoAux.crearMoto(moto)) {
-			creado= true;
-			this.listaVehiculos.add(moto);
+
+		switch (combustible) {
+		case ELECTRICO:
+			Vehiculo motoE = new Moto(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado,
+					precio, autonomia, tiempoPromedioCarga, false, false);
+			if (empleadoAux.crearVehiculo(motoE)) {
+				listaVehiculos.add(motoE);
+				creado = true;
+			}
+			break;
+
+		case HIBRIDO:
+			if (!esEnchufable) {
+				Vehiculo motoH = new Moto(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible,
+						estado, precio, autonomia, tiempoPromedioCarga, esEnchufable, esHibridoLigero);
+				if (empleadoAux.crearVehiculo(motoH)) {
+					creado = true;
+					listaVehiculos.add(motoH);
+				}
+			} else {
+				Vehiculo motoH = new Moto(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible,
+						estado, precio, autonomia, tiempoPromedioCarga, esEnchufable, false);
+				if (empleadoAux.crearVehiculo(motoH)) {
+					creado = true;
+					listaVehiculos.add(motoH);
+				}
+			}
+			break;
+
+		default:
+			Vehiculo motoD= new Moto(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, null,
+					null, false, false);
+			if (empleadoAux.crearVehiculo(motoD)) {
+				creado=true;
+				listaVehiculos.add(motoD);
+			}
+			break;
 		}
+
 		return creado;
 
 	}
+
 	/**
 	 *
 	 * @param identificacionEmpleado
@@ -447,6 +527,11 @@ public class Concesionario {
 	 * @param transmicion
 	 * @param combustible
 	 * @param estado
+	 * @param precio
+	 * @param autonimia
+	 * @param tiempoPromedioCarga
+	 * @param esEnchufable
+	 * @param esHibridoLigero
 	 * @param num_pasajeros
 	 * @param num_Puertas
 	 * @param cap_Maletero
@@ -461,27 +546,62 @@ public class Concesionario {
 	 * @throws VehiculoException
 	 * @throws EmpleadoException
 	 */
-	public boolean crearSedan(String identificacionEmpleado,String marca, String modelo, String cambios, double velMaxima, String cilindraje,
-			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, int num_pasajeros,
-			int num_Puertas, int cap_Maletero, boolean aire_Acondicionado, boolean cam_Reversa, int num_Bolsas,
-			boolean abs, boolean sen_Colision, boolean sen_Trafico_Cruzado, boolean asistente_Carril) throws VehiculoException, EmpleadoException{
+	public boolean crearSedan(String identificacionEmpleado,String marca, String modelo, String cambios, String velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonimia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero,
+			String  num_pasajeros, String num_Puertas, String cap_Maletero, boolean aire_Acondicionado, boolean cam_Reversa,
+			String  num_Bolsas, boolean abs, boolean sen_Colision, boolean sen_Trafico_Cruzado, boolean asistente_Carril) throws VehiculoException, EmpleadoException{
 
 		boolean creado= false;
-
 		Empleado empleadoAux= obtenerEmpleado(identificacionEmpleado);
-		Vehiculo sedan = new Sedan(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, num_pasajeros,
-				num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs, sen_Colision, sen_Trafico_Cruzado, asistente_Carril);
 
-
-		if (empleadoAux== null) {
-			throw new EmpleadoException("El empleado no esta registrado");
+		if (empleadoAux==null) {
+			throw new EmpleadoException("El empleado no está registrado");
 		}
 
-		if (empleadoAux.crearSedan(sedan)) {
-			creado= true;
-			this.listaVehiculos.add(sedan);
-		}
+		switch (combustible) {
+		case ELECTRICO:
+			Vehiculo sedanE= new Sedan(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga,
+					false, false, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs, sen_Colision,
+					sen_Trafico_Cruzado, asistente_Carril);
 
+			if (empleadoAux.crearVehiculo(sedanE)) {
+				listaVehiculos.add(sedanE);
+				creado = true;
+			}
+			break;
+
+		case HIBRIDO:
+			if (!esEnchufable) {
+				Vehiculo sedanH= new Sedan(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga,
+						esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs, sen_Colision,
+						sen_Trafico_Cruzado, asistente_Carril);
+				if (empleadoAux.crearVehiculo(sedanH)) {
+					creado = true;
+					listaVehiculos.add(sedanH);
+				}
+
+			} else {
+				Vehiculo sedanH= new Sedan(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga,
+						esEnchufable, false, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs, sen_Colision,
+						sen_Trafico_Cruzado, asistente_Carril);
+				if (empleadoAux.crearVehiculo(sedanH)) {
+					creado = true;
+					listaVehiculos.add(sedanH);
+				}
+			}
+			break;
+
+		default:
+			Vehiculo sedanD= new Sedan(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, null, null,
+					false, false, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs, sen_Colision,
+					sen_Trafico_Cruzado, asistente_Carril);
+			if (empleadoAux.crearVehiculo(sedanD)) {
+				creado= true;
+				listaVehiculos.add(sedanD);
+			}
+			break;
+		}
 		return creado;
 	}
 
@@ -505,25 +625,61 @@ public class Concesionario {
 	 * @throws EmpleadoException
 	 * @throws VehiculoException
 	 */
-	public boolean crearDeportivo(String identificacionEmpleado,String marca, String modelo, String cambios, double velMaxima, String cilindraje,
-			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, int num_pasajeros,
-			int num_Puertas, int num_Bolsas, double num_Caballos_Fuerza, double tiempo_en_100KM) throws EmpleadoException, VehiculoException{
+	public boolean crearDeportivo(String identificacionEmpleado,String marca, String modelo, String cambios, String velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonimia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero,
+			String num_pasajeros, String num_Puertas, String num_Bolsas, String  num_Caballos_Fuerza, String tiempo_en_100KM) throws EmpleadoException, VehiculoException{
 
 		boolean creado= false;
 		Empleado empleadoAux= obtenerEmpleado(identificacionEmpleado);
-		Vehiculo deportivo= new Deportivo(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado,
-				num_pasajeros, num_Puertas, num_Bolsas, num_Caballos_Fuerza, tiempo_en_100KM);
+		if (empleadoAux==null) {
+			throw new EmpleadoException("El empleado no está registrado");
+		}
 
-		if (empleadoAux== null) {
-			throw new EmpleadoException("El empleado no esta registrado");
+		switch (combustible) {
+		case ELECTRICO:
+			Vehiculo deportivoE= new Deportivo(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga,
+					false, false, num_pasajeros, num_Puertas, num_Bolsas, num_Caballos_Fuerza, tiempo_en_100KM);
+
+			if (empleadoAux.crearVehiculo(deportivoE)) {
+				listaVehiculos.add(deportivoE);
+				creado = true;
+			}
+			break;
+
+		case HIBRIDO:
+			if (!esEnchufable) {
+				Vehiculo deportivoH= new Deportivo(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga,
+						esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, num_Bolsas, num_Caballos_Fuerza, tiempo_en_100KM);
+				if (empleadoAux.crearVehiculo(deportivoH)) {
+					creado = true;
+					listaVehiculos.add(deportivoH);
+				}
+			} else {
+				Vehiculo deportivoH= new Deportivo(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga,
+						esEnchufable, false, num_pasajeros, num_Puertas, num_Bolsas, num_Caballos_Fuerza, tiempo_en_100KM);
+
+				if (empleadoAux.crearVehiculo(deportivoH)) {
+					creado = true;
+					listaVehiculos.add(deportivoH);
+				}
+			}
+			break;
+
+		default:
+			Vehiculo deportivoD= new Deportivo(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, null, null,
+					false, false, num_pasajeros, num_Puertas, num_Bolsas, num_Caballos_Fuerza, tiempo_en_100KM);
+			if (empleadoAux.crearVehiculo(deportivoD)) {
+				creado = true;
+				listaVehiculos.add(deportivoD);
+			}
+			break;
 		}
-		if (empleadoAux.crearDeportivo(deportivo)) {
-			creado= true;
-			this.listaVehiculos.add(deportivo);
-		}
+
 
 		return creado;
 	}
+
 	/**
 	 *
 	 * @param identificacionEmpleado
@@ -535,6 +691,11 @@ public class Concesionario {
 	 * @param transmicion
 	 * @param combustible
 	 * @param estado
+	 * @param precio
+	 * @param autonimia
+	 * @param tiempoPromedioCarga
+	 * @param esEnchufable
+	 * @param esHibridoLigero
 	 * @param num_pasajeros
 	 * @param num_Puertas
 	 * @param cap_Maletero
@@ -550,24 +711,64 @@ public class Concesionario {
 	 * @throws VehiculoException
 	 * @throws EmpleadoException
 	 */
-	public boolean crearCamioneta(String identificacionEmpleado,String marca, String modelo, String cambios, double velMaxima, String cilindraje,
-			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, int num_pasajeros,
-			int num_Puertas, int cap_Maletero, boolean aire_Acondicionado, boolean cam_Reversa, int num_Bolsas,
-			boolean abs, boolean sen_Colision, boolean sen_Trafico_Cruzado, boolean asistente_Carril,
+	public boolean crearCamioneta(String identificacionEmpleado,String marca, String modelo, String cambios, String velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonimia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero,
+			String num_pasajeros, String num_Puertas, String cap_Maletero, boolean aire_Acondicionado, boolean cam_Reversa,
+			String num_Bolsas, boolean abs, boolean sen_Colision, boolean sen_Trafico_Cruzado, boolean asistente_Carril,
 			boolean esCuatroxCuatro) throws VehiculoException, EmpleadoException {
 
 		boolean creado= false;
 		Empleado empleadoAux= obtenerEmpleado(identificacionEmpleado);
-		Vehiculo camioneta= new Camioneta(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, num_pasajeros, num_Puertas,
-				cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs, sen_Colision, sen_Trafico_Cruzado, asistente_Carril, esCuatroxCuatro);
 
-		if (empleadoAux== null) {
-			throw new EmpleadoException("El empleado no esta registrado");
+		if (empleadoAux==null) {
+			throw new EmpleadoException("El empleado no está registrado");
 		}
-		if (empleadoAux.crearDeportivo(camioneta)) {
-			creado= true;
-			this.listaVehiculos.add(camioneta);
+
+		switch (combustible) {
+		case ELECTRICO:
+			Vehiculo camionetaE = new Camioneta(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga, false,
+					false, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs, sen_Colision, sen_Trafico_Cruzado,
+					asistente_Carril, esCuatroxCuatro);
+
+			if (empleadoAux.crearVehiculo(camionetaE)) {
+				listaVehiculos.add(camionetaE);
+				creado = true;
+			}
+			break;
+
+		case HIBRIDO:
+			if (!esEnchufable) {
+				Vehiculo camionetaH = new Camioneta(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga,
+						esEnchufable,esHibridoLigero, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs, sen_Colision, sen_Trafico_Cruzado,
+						asistente_Carril, esCuatroxCuatro);
+				if (empleadoAux.crearVehiculo(camionetaH)) {
+					creado = true;
+					listaVehiculos.add(camionetaH);
+				}
+			} else {
+				Vehiculo camionetaH = new Camioneta(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga,
+						esEnchufable,false, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs, sen_Colision, sen_Trafico_Cruzado,
+						asistente_Carril, esCuatroxCuatro);
+				if (empleadoAux.crearVehiculo(camionetaH)) {
+					creado = true;
+					listaVehiculos.add(camionetaH);
+				}
+			}
+			break;
+
+		default:
+			Vehiculo camionetaD = new Camioneta(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, null, null,
+					false,false, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs, sen_Colision, sen_Trafico_Cruzado,
+					asistente_Carril, esCuatroxCuatro);
+			if (empleadoAux.crearVehiculo(camionetaD)) {
+				creado = true;
+				listaVehiculos.add(camionetaD);
+			}
+
+			break;
 		}
+
 
 		return creado;
 
@@ -584,6 +785,11 @@ public class Concesionario {
 	 * @param transmicion
 	 * @param combustible
 	 * @param estado
+	 * @param precio
+	 * @param autonimia
+	 * @param tiempoPromedioCarga
+	 * @param esEnchufable
+	 * @param esHibridoLigero
 	 * @param num_pasajeros
 	 * @param num_Puertas
 	 * @param num_Bolsas
@@ -597,22 +803,55 @@ public class Concesionario {
 	 * @throws EmpleadoException
 	 * @throws VehiculoException
 	 */
-	public boolean crearPickUp(String identificacionEmpleado, String marca, String modelo, String cambios, double velMaxima, String cilindraje,
-			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, int num_pasajeros,
-			int num_Puertas, int num_Bolsas, int capacidadCarga, boolean aire_Acondicionado, boolean cam_Reversa,
-			boolean vel_Crucero, boolean abs, boolean esCuatroPorCuatro) throws EmpleadoException, VehiculoException {
+	public boolean crearPickUp(String identificacionEmpleado, String marca, String modelo, String cambios, String velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonimia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero,
+			String num_pasajeros, String num_Puertas, String num_Bolsas, String capacidadCarga, boolean aire_Acondicionado,
+			boolean cam_Reversa, boolean vel_Crucero, boolean abs, boolean esCuatroPorCuatro) throws EmpleadoException, VehiculoException {
 		boolean creado= false;
 		Empleado empleadoAux= obtenerEmpleado(identificacionEmpleado);
-		Vehiculo pickUp= new Pick_Up(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, num_pasajeros, num_Puertas,
-				num_Bolsas, capacidadCarga, aire_Acondicionado, cam_Reversa, vel_Crucero, abs, esCuatroPorCuatro);
 
-
-		if (empleadoAux== null) {
-			throw new EmpleadoException("El empleado no esta registrado");
+		if (empleadoAux==null) {
+			throw new EmpleadoException("El empleado no está registrado");
 		}
-		if (empleadoAux.crearDeportivo(pickUp)) {
-			creado= true;
-			this.listaVehiculos.add(pickUp);
+
+		switch (combustible) {
+		case ELECTRICO:
+			Vehiculo pickUpE= new Pick_Up(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga,
+					false, false, num_pasajeros, num_Puertas, num_Bolsas, capacidadCarga, aire_Acondicionado, cam_Reversa, vel_Crucero, abs, esCuatroPorCuatro);
+			if (empleadoAux.crearVehiculo(pickUpE)) {
+				listaVehiculos.add(pickUpE);
+				creado = true;
+			}
+			break;
+
+		case HIBRIDO:
+			if (!esEnchufable) {
+				Vehiculo pickUpH= new Pick_Up(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga,
+						esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, num_Bolsas, capacidadCarga, aire_Acondicionado, cam_Reversa, vel_Crucero, abs, esCuatroPorCuatro);
+				if (empleadoAux.crearVehiculo(pickUpH)) {
+					creado = true;
+					listaVehiculos.add(pickUpH);
+				}
+			} else {
+				Vehiculo pickUpH= new Pick_Up(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga,
+						esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, num_Bolsas, capacidadCarga, aire_Acondicionado, cam_Reversa, vel_Crucero, abs, esCuatroPorCuatro);
+				if (empleadoAux.crearVehiculo(pickUpH)) {
+					creado = true;
+					listaVehiculos.add(pickUpH);
+				}
+			}
+			break;
+
+		default:
+			Vehiculo pickUpD= new Pick_Up(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, null, null,
+					false, false, num_pasajeros, num_Puertas, num_Bolsas, capacidadCarga, aire_Acondicionado, cam_Reversa, vel_Crucero, abs, esCuatroPorCuatro);
+			if (empleadoAux.crearVehiculo(pickUpD)) {
+				creado = true;
+				listaVehiculos.add(pickUpD);
+			}
+
+			break;
 		}
 
 		return creado;
@@ -629,6 +868,11 @@ public class Concesionario {
 	 * @param transmicion
 	 * @param combustible
 	 * @param estado
+	 * @param precio
+	 * @param autonimia
+	 * @param tiempoPromedioCarga
+	 * @param esEnchufable
+	 * @param esHibridoLigero
 	 * @param num_pasajeros
 	 * @param num_Puertas
 	 * @param cap_Maletero
@@ -640,26 +884,67 @@ public class Concesionario {
 	 * @throws EmpleadoException
 	 * @throws VehiculoException
 	 */
-	public boolean crearVan(String identificacionEmpleado, String marca, String modelo, String cambios, double velMaxima, String cilindraje,
-			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, int num_pasajeros,
-			int num_Puertas, int cap_Maletero, boolean aire_Acondicionado, boolean cam_Reversa, int num_Bolsas,
-			boolean abs) throws EmpleadoException, VehiculoException {
+	public boolean crearVan(String identificacionEmpleado, String marca, String modelo, String cambios, String velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonimia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero,
+			String  num_pasajeros, String num_Puertas, String cap_Maletero, boolean aire_Acondicionado, boolean cam_Reversa,
+			String num_Bolsas, boolean abs) throws EmpleadoException, VehiculoException {
+
+
 		boolean creado= false;
 		Empleado empleadoAux= obtenerEmpleado(identificacionEmpleado);
-		Vehiculo van= new Van(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, num_pasajeros,
-				num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs);
 
 
-		if (empleadoAux== null) {
-			throw new EmpleadoException("El empleado no esta registrado");
+		if (empleadoAux==null) {
+			throw new EmpleadoException("El empleado no está registrado");
 		}
-		if (empleadoAux.crearDeportivo(van)) {
-			creado= true;
-			this.listaVehiculos.add(van);
+
+		switch (combustible) {
+		case ELECTRICO:
+			Vehiculo vanE= new Van(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga,
+					false, false, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs);
+			if (empleadoAux.crearVehiculo(vanE)) {
+				listaVehiculos.add(vanE);
+				creado = true;
+			}
+			break;
+
+		case HIBRIDO:
+			if (!esEnchufable) {
+				Vehiculo vanH= new Van(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga,
+						esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs);
+
+				if (empleadoAux.crearVehiculo(vanH)) {
+					creado = true;
+					listaVehiculos.add(vanH);
+				}
+			} else {
+				Vehiculo vanH= new Van(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga,
+						esEnchufable, false, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs);
+
+				if (empleadoAux.crearVehiculo(vanH)) {
+					creado = true;
+					listaVehiculos.add(vanH);
+				}
+			}
+			break;
+
+		default:
+			Vehiculo vanD= new Van(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, null, null,
+					false, false, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs);
+
+			if (empleadoAux.crearVehiculo(vanD)) {
+				creado = true;
+				listaVehiculos.add(vanD);
+			}
+
+			break;
 		}
 
 		return creado;
 	}
+
+
 	/**
 	 *
 	 * @param identificacionEmpleado
@@ -671,6 +956,11 @@ public class Concesionario {
 	 * @param transmicion
 	 * @param combustible
 	 * @param estado
+	 * @param precio
+	 * @param autonimia
+	 * @param tiempoPromedioCarga
+	 * @param esEnchufable
+	 * @param esHibridoLigero
 	 * @param num_pasajeros
 	 * @param num_Puertas
 	 * @param cap_Maletero
@@ -685,25 +975,64 @@ public class Concesionario {
 	 * @throws EmpleadoException
 	 * @throws VehiculoException
 	 */
-	public boolean crearBus(String identificacionEmpleado, String marca, String modelo, String cambios, double velMaxima, String cilindraje,
-			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, int num_pasajeros,
-			int num_Puertas, int cap_Maletero, boolean aire_Acondicionado, boolean cam_Reversa, boolean vel_Crucero,
-			int num_Bolsas, boolean abs, int num_ejes, int num_salidas_emergencia) throws EmpleadoException, VehiculoException {
+	public boolean crearBus(String identificacionEmpleado, String marca, String modelo, String cambios, String velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonimia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero,
+			String  num_pasajeros, String num_Puertas, String cap_Maletero, boolean aire_Acondicionado, boolean cam_Reversa,
+			boolean vel_Crucero, String num_Bolsas, boolean abs, String num_ejes, String num_salidas_emergencia) throws EmpleadoException, VehiculoException {
+
+
 		boolean creado= false;
 		Empleado empleadoAux= obtenerEmpleado(identificacionEmpleado);
-		Vehiculo bus= new Bus(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, num_pasajeros, num_Puertas, cap_Maletero,
-				aire_Acondicionado, cam_Reversa, vel_Crucero, num_Bolsas, abs, num_ejes, num_salidas_emergencia);
-
-		if (empleadoAux== null) {
-			throw new EmpleadoException("El empleado no esta registrado");
-		}
-		if (empleadoAux.crearDeportivo(bus)) {
-			creado= true;
-			this.listaVehiculos.add(bus);
+		if (empleadoAux==null) {
+			throw new EmpleadoException("El empleado no está registrado");
 		}
 
+		switch (combustible) {
+		case ELECTRICO:
+			Vehiculo busE = new Bus(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga,
+					false, false, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, vel_Crucero, num_Bolsas,
+					abs, num_ejes, num_salidas_emergencia);
+
+			if (empleadoAux.crearVehiculo(busE)) {
+				listaVehiculos.add(busE);
+				creado = true;
+			}
+			break;
+
+		case HIBRIDO:
+			if (!esEnchufable) {
+				Vehiculo busH = new Bus(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga,
+						esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, vel_Crucero, num_Bolsas,
+						abs, num_ejes, num_salidas_emergencia);
+				if (empleadoAux.crearVehiculo(busH)) {
+					creado = true;
+					listaVehiculos.add(busH);
+				}
+			} else {
+				Vehiculo busH = new Bus(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga,
+						esEnchufable, false, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, vel_Crucero, num_Bolsas,
+						abs, num_ejes, num_salidas_emergencia);
+				if (empleadoAux.crearVehiculo(busH)) {
+					creado = true;
+					listaVehiculos.add(busH);
+				}
+			}
+			break;
+
+		default:
+			Vehiculo busD = new Bus(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, null, null,
+					false, false, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, vel_Crucero, num_Bolsas,
+					abs, num_ejes, num_salidas_emergencia);
+			if (empleadoAux.crearVehiculo(busD)) {
+				creado = true;
+				listaVehiculos.add(busD);
+			}
+			break;
+		}
 		return creado;
 	}
+
 	/**
 	 *
 	 * @param identificacionEmpleado
@@ -715,6 +1044,11 @@ public class Concesionario {
 	 * @param transmicion
 	 * @param combustible
 	 * @param estado
+	 * @param precio
+	 * @param autonimia
+	 * @param tiempoPromedioCarga
+	 * @param esEnchufable
+	 * @param esHibridoLigero
 	 * @param aire_Acondicionado
 	 * @param abs
 	 * @param num_ejes
@@ -723,21 +1057,61 @@ public class Concesionario {
 	 * @throws EmpleadoException
 	 * @throws VehiculoException
 	 */
-	public boolean crearCamion(String identificacionEmpleado, String marca, String modelo, String cambios, double velMaxima, String cilindraje,
-			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, boolean aire_Acondicionado,
-			boolean abs, int num_ejes, String tipo_Camion) throws EmpleadoException, VehiculoException {
+	public boolean crearCamion(String identificacionEmpleado, String marca, String modelo, String cambios, String velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonimia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero,
+			boolean aire_Acondicionado, boolean abs, String num_ejes, String tipo_Camion) throws EmpleadoException, VehiculoException {
+
+
 		boolean creado= false;
 		Empleado empleadoAux= obtenerEmpleado(identificacionEmpleado);
-		Vehiculo camion= new Camion(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, aire_Acondicionado, abs, num_ejes, tipo_Camion);
 
-		if (empleadoAux== null) {
-			throw new EmpleadoException("El empleado no esta registrado");
-		}
-		if (empleadoAux.crearDeportivo(camion)) {
-			creado= true;
-			this.listaVehiculos.add(camion);
+
+		if (empleadoAux==null) {
+			throw new EmpleadoException("El empleado no está registrado");
 		}
 
+		switch (combustible) {
+		case ELECTRICO:
+			Vehiculo camionE= new Camion(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga,
+					false, false, aire_Acondicionado, abs, num_ejes, tipo_Camion);
+
+			if (empleadoAux.crearVehiculo(camionE)) {
+				listaVehiculos.add(camionE);
+				creado = true;
+			}
+			break;
+
+		case HIBRIDO:
+			if (!esEnchufable) {
+				Vehiculo camionH= new Camion(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga,
+						esEnchufable, esHibridoLigero, aire_Acondicionado, abs, num_ejes, tipo_Camion);
+				if (empleadoAux.crearVehiculo(camionH)) {
+					creado = true;
+					listaVehiculos.add(camionH);
+				}
+			} else {
+				Vehiculo camionH= new Camion(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga,
+						esEnchufable, false, aire_Acondicionado, abs, num_ejes, tipo_Camion);
+				if (empleadoAux.crearVehiculo(camionH)) {
+					creado = true;
+					listaVehiculos.add(camionH);
+				}
+			}
+			break;
+
+		default:
+			Vehiculo camionD= new Camion(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, null, null,
+					false, false, aire_Acondicionado, abs, num_ejes, tipo_Camion);
+			if (empleadoAux.crearVehiculo(camionD)) {
+				creado=true;
+				listaVehiculos.add(camionD);
+			}
+
+
+
+			break;
+		}
 		return creado;
 	}
 	/**
@@ -809,7 +1183,8 @@ public class Concesionario {
 	 * @throws EmpleadoException
 	 * @throws TransaccionException
 	 */
-	public boolean crearTransaccion(String identificacionEmpleado, TipoTransaccion tipoTransaccion, String fecha, double total , String codigo, String cantDias) throws EmpleadoException, TransaccionException{
+	public boolean crearTransaccion(String identificacionEmpleado, TipoTransaccion tipoTransaccion, String fecha, double total , String codigo, String cantDias, String cedulaCliente)
+			throws EmpleadoException, TransaccionException{
 		boolean creada= false;
 
 		Empleado empleadoAux= obtenerEmpleado(identificacionEmpleado);
@@ -819,12 +1194,12 @@ public class Concesionario {
 		}
 
 		if (tipoTransaccion.equals(TipoTransaccion.COMPRA)) {
-			Transaccion nuevaTransaccion= new Transaccion(fecha, total, codigo, tipoTransaccion, null);
+			Transaccion nuevaTransaccion= new Transaccion(fecha, total, codigo, tipoTransaccion, null,cedulaCliente);
 			creada= empleadoAux.crearTransaccion(nuevaTransaccion);
 			return creada;
 
 		}else if (tipoTransaccion.equals(TipoTransaccion.ALQUILER)) {
-			Transaccion nuevaTransaccion= new Transaccion(fecha, total, codigo, tipoTransaccion, cantDias);
+			Transaccion nuevaTransaccion= new Transaccion(fecha, total, codigo, tipoTransaccion, cantDias,cedulaCliente);
 			creada= empleadoAux.crearTransaccion(nuevaTransaccion);
 			return creada;
 		}
@@ -853,24 +1228,46 @@ public class Concesionario {
 
 //-----------------------------------------VENTA Y ALQUILER DE LOS VEHICULOS---------------------------------------------------
 
+
+
+
 	/**
 	 * En este metodod se verifica primero que el empleado exista, esto por medio del metodo obtenerEmpleado, si este toma un valor nulo, retorna false
 	 * En cambio, si es diferente de null y el retusultado del metodo de venderVehiculo es true, este metodo retorna true
+	 * Tambien se verifica que un vehiculo no se encuentrea alquilado para poder realizar la venta de este
+	 * Se verifica que no este vendido ya, aunque estoe es casi imposible porque al momento de venderlo ya se borra de la lista,
+	 * sin embargo, nunca esta mal una confirmacion mas
 	 * @param idEmpleado
 	 * @param vehiculoVenta
 	 * @return
 	 * @throws VehiculoException
 	 * @throws EmpleadoException
+	 * @throws VentaException
 	 */
-	public boolean venderVehiculo(String idEmpleado, Vehiculo vehiculoVenta) throws VehiculoException, EmpleadoException {
+	public boolean venderVehiculo(String idEmpleado, Vehiculo vehiculoVenta) throws VehiculoException, EmpleadoException, VentaException {
 		Empleado empleadoAux=obtenerEmpleado(idEmpleado);
 		if (empleadoAux== null){
-			throw new EmpleadoException("El empleado no esta registrado");
+			throw new EmpleadoException("El empleado no está registrado");
 		}
+		/*Verifico que no se encuentre en alquiler
+		 * */
+		for (Vehiculo vehiculoAux : listaVehiculosAlquiladosList) {
+			if (vehiculoAux==vehiculoVenta) {
+				throw new VentaException("Un vehiculo alquilado no puede ser vendido");
+			}
+		}
+		for (Vehiculo vehiculoAux : listaVehiculosVendidosList) {
+			if (vehiculoAux== vehiculoVenta) {
+				throw new VentaException("El vehiculo ya se encuentra vendido, por lo tanto no está disponible");
+			}
+		}
+
 		if (empleadoAux.venderVehiculo(vehiculoVenta)) {
+			listaVehiculosVendidosList.add(vehiculoVenta);
 			listaVehiculos.remove(vehiculoVenta);
 			return true;
 		}
+
 
 		return false;
 		//return  obtenerEmpleado(idEmpleado)!=null && obtenerEmpleado(idEmpleado).venderVehiculo(vehiculoVenta) ? true : false;

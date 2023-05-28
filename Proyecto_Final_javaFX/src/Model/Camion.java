@@ -5,13 +5,53 @@ import java.io.Serializable;
 public class Camion extends Vehiculo implements Serializable {
     private boolean aire_Acondicionado;
     private boolean abs;
-    private int num_ejes;
+    private String  num_ejes;
     private String tipo_Camion;
+
+
 
     public Camion(){
     }
 
-    public Camion(boolean aire_Acondicionado, boolean abs, int num_ejes, String tipo_Camion) {
+    /**  CONSTRUCTOR CON ATRIBUTOS DE LA SUPER CLASE + LOS ATRIBUTOS PROPIOS
+	 * @param marca
+	 * @param modelo
+	 * @param cambios
+	 * @param velMaxima
+	 * @param cilindraje
+	 * @param transmicion
+	 * @param combustible
+	 * @param estado
+	 * @param precio
+	 * @param autonimia
+	 * @param tiempoPromedioCarga
+	 * @param esEnchufable
+	 * @param esHibridoLigero
+	 * @param aire_Acondicionado
+	 * @param abs
+	 * @param num_ejes
+	 * @param tipo_Camion
+	 */
+	public Camion(String marca, String modelo, String cambios, String velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonimia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero,
+			boolean aire_Acondicionado, boolean abs, String num_ejes, String tipo_Camion) {
+		super(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia,
+				tiempoPromedioCarga, esEnchufable, esHibridoLigero);
+		this.aire_Acondicionado = aire_Acondicionado;
+		this.abs = abs;
+		this.num_ejes = num_ejes;
+		this.tipo_Camion = tipo_Camion;
+	}
+
+	/**
+     * CONSTRUCTOR CON ATRIBUTOS PROPIOS
+     * @param aire_Acondicionado
+     * @param abs
+     * @param num_ejes
+     * @param tipo_Camion
+     */
+    public Camion(boolean aire_Acondicionado, boolean abs, String num_ejes, String tipo_Camion) {
         this.aire_Acondicionado = aire_Acondicionado;
         this.abs = abs;
         this.num_ejes = num_ejes;
@@ -19,16 +59,6 @@ public class Camion extends Vehiculo implements Serializable {
     }
 
 
-
-    public Camion(String marca, String modelo, String cambios, double velMaxima, String cilindraje,
-			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, boolean aire_Acondicionado,
-			boolean abs, int num_ejes, String tipo_Camion) {
-		super(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado);
-		this.aire_Acondicionado = aire_Acondicionado;
-		this.abs = abs;
-		this.num_ejes = num_ejes;
-		this.tipo_Camion = tipo_Camion;
-	}
 
 	public boolean isAire_Acondicionado() {
         return aire_Acondicionado;
@@ -46,15 +76,15 @@ public class Camion extends Vehiculo implements Serializable {
         this.abs = abs;
     }
 
-    public int getNum_ejes() {
-        return num_ejes;
-    }
+    public String getNum_ejes() {
+		return num_ejes;
+	}
 
-    public void setNum_ejes(int num_ejes) {
-        this.num_ejes = num_ejes;
-    }
+	public void setNum_ejes(String num_ejes) {
+		this.num_ejes = num_ejes;
+	}
 
-    public String getTipo_Camion() {
+	public String getTipo_Camion() {
         return tipo_Camion;
     }
 

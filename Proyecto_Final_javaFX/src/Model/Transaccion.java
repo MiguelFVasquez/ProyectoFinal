@@ -10,10 +10,8 @@ public class Transaccion {
 	private Vehiculo vehiculoTransaccion;
 	private TipoTransaccion tipoTransaccion;
 	private String cantDias;
+	private String cedulaCliente;
 	private List<DetalleTransaccion> listaDetalles= new ArrayList<>();
-
-
-
 
 	/**
 	 * @param fecha
@@ -21,13 +19,14 @@ public class Transaccion {
 	 * @param codigo
 	 * @param tipoTransaccion
 	 */
-	public Transaccion(String fecha, double total, String codigo, TipoTransaccion tipoTransaccion, String cantDias) {
+	public Transaccion(String fecha, double total, String codigo, TipoTransaccion tipoTransaccion, String cantDias, String cedulaCliente) {
 		super();
 		this.fecha = fecha;
 		this.total = total;
 		this.codigo = codigo;
 		this.tipoTransaccion = tipoTransaccion;
 		this.cantDias= cantDias;
+		this.cedulaCliente= cedulaCliente;
 	}
 
 
@@ -96,6 +95,15 @@ public class Transaccion {
 
 	public void setCantDias(String cantDias) {
 		this.cantDias = cantDias;
+	}
+
+	public String getCedulaCliente() {
+		return cedulaCliente;
+	}
+
+
+	public void setCedulaCliente(String cedulaCliente) {
+		this.cedulaCliente = cedulaCliente;
 	}
 
 

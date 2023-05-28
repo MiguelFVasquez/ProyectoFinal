@@ -189,146 +189,22 @@ public class Empleado extends Persona {
 		return (Vehiculo) listaVehiculos.stream().filter(v -> v.getMarca().equals(marca) && v.getModelo().equals(modelo));
 
 	}
-
 	/**
-	 * Se recibe una intancia de moto y se verifica que no exista ya en la lista de vehiculos
-	 * @param moto
+	 * Se recibe un nuevo vehiculo y se mira que este ya no este registrado en base a su marca y modelo
+	 * @param nuevoVehiculo
 	 * @return
 	 * @throws VehiculoException
 	 */
-	public boolean crearMoto(Vehiculo moto) throws VehiculoException{
+	public boolean crearVehiculo(Vehiculo nuevoVehiculo) throws VehiculoException {
 		boolean creado= false;
-		if (verificarVehiculo(moto.getMarca(), moto.getModelo())) {
+		if (verificarVehiculo(nuevoVehiculo.getMarca(), nuevoVehiculo.getModelo())) {
 			throw new VehiculoException("El vehiculo ya se encuentra registrado");
 		}else {
 			creado= true;
-			listaVehiculos.add(moto);
-		}
-
-		return creado;
-	}
-	/**
-	 *
-	 * @param sedan
-	 * @return
-	 * @throws VehiculoException
-	 */
-	public boolean crearSedan(Vehiculo sedan) throws VehiculoException{
-		boolean creado= false;
-		if (verificarVehiculo(sedan.getMarca(), sedan.getModelo())) {
-			throw new VehiculoException("El vehiculo ya se encuentra registrado");
-		}else {
-			creado= true;
-			listaVehiculos.add(sedan);
-		}
-
-		return creado;
-	}
-
-	/**
-	 *
-	 * @param deportivo
-	 * @return
-	 * @throws VehiculoException
-	 */
-	public boolean crearDeportivo(Vehiculo deportivo) throws VehiculoException{
-		boolean creado= false;
-		if (verificarVehiculo(deportivo.getMarca(), deportivo.getModelo())) {
-			throw new VehiculoException("El vehiculo ya se encuetra registrado");
-		}
-		else {
-			creado= true;
-			listaVehiculos.add(deportivo);
-		}
-		return creado;
-	}
-
-	/**
-	 *
-	 * @param camioneta
-	 * @return
-	 * @throws VehiculoException
-	 */
-	public boolean crearCamioneta(Vehiculo camioneta) throws VehiculoException{
-		boolean creado= false;
-		if (verificarVehiculo(camioneta.getMarca(), camioneta.getModelo())) {
-			throw new VehiculoException("El vehiculo ya se encuetra registrado");
-		}
-		else {
-			creado= true;
-			listaVehiculos.add(camioneta);
-		}
-		return creado;
-	}
-
-	/**
-	 *
-	 * @param pickUp
-	 * @return
-	 * @throws VehiculoException
-	 */
-	public boolean crearPickUp(Vehiculo pickUp) throws VehiculoException {
-		boolean creado= false;
-		if (verificarVehiculo(pickUp.getMarca(), pickUp.getModelo())) {
-			throw new VehiculoException("El vehiculo ya se encuetra registrado");
-		}
-		else {
-			creado= true;
-			listaVehiculos.add(pickUp);
+			listaVehiculos.add(nuevoVehiculo);
 		}
 		return creado;
 
-	}
-	/**
-	 *
-	 * @param van
-	 * @return
-	 * @throws VehiculoException
-	 */
-	public boolean crearVan(Vehiculo van) throws VehiculoException {
-		boolean creado= false;
-		if (verificarVehiculo(van.getMarca(), van.getModelo())) {
-			throw new VehiculoException("El vehiculo ya se encuetra registrado");
-		}
-		else {
-			creado= true;
-			listaVehiculos.add(van);
-		}
-		return creado;
-	}
-	/**
-	 *
-	 * @param bus
-	 * @return
-	 * @throws VehiculoException
-	 */
-	public boolean crearBus(Vehiculo bus) throws VehiculoException {
-		boolean creado= false;
-		if (verificarVehiculo(bus.getMarca(), bus.getModelo())) {
-			throw new VehiculoException("El vehiculo ya se encuetra registrado");
-		}
-		else {
-			creado= true;
-			listaVehiculos.add(bus);
-		}
-		return creado;
-	}
-	/**
-	 *
-	 * @param camion
-	 * @return
-	 * @throws VehiculoException
-	 */
-	public boolean crearCamion(Vehiculo camion) throws VehiculoException {
-		boolean creado= false;
-		if (verificarVehiculo(camion.getMarca(), camion.getModelo())) {
-			throw new VehiculoException("El vehiculo ya se encuetra registrado");
-		}
-		else {
-			creado= true;
-			listaVehiculos.add(camion);
-		}
-		return creado;
 	}
 
 	/**

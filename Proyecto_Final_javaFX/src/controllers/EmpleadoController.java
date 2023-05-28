@@ -1,19 +1,24 @@
 package controllers;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 
 import javax.swing.JOptionPane;
 
 import Exceptions.ClienteException;
 import Exceptions.EmpleadoException;
+import Exceptions.VehiculoException;
 import Model.Cliente;
 import Model.Concesionario;
 import Model.Empleado;
 import Model.TipoCombustible;
 import Model.TipoEstado;
+import Model.TipoTransaccion;
 import Model.TipoTransmicion;
 import Model.TipoVehiculo;
+import Model.Transaccion;
+import Model.Vehiculo;
 import application.Aplicacion;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,6 +29,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -42,6 +48,8 @@ public class EmpleadoController implements Initializable {
     @FXML
     private URL location;
 
+
+//Table view clientes
     @FXML
     private TableView<Cliente> tableViewClientes;
 
@@ -54,6 +62,31 @@ public class EmpleadoController implements Initializable {
     @FXML
     private TableColumn<Cliente, String> columCedulaCliente;
 
+//Table view Vehiculos
+    @FXML
+    private TableView<Vehiculo> tableViewVehiculos;
+    @FXML
+    private TableColumn<Vehiculo, String> columMarca;
+    @FXML
+    private TableColumn<Vehiculo, String> columModelo;
+    @FXML
+    private TableColumn<Vehiculo, Double> columPrecio;
+
+//Table view transacciones
+
+    @FXML
+    private TableView<Transaccion> tableViewTransaccion;
+    @FXML
+    private TableColumn<Transaccion, String> columTipoTransaccion;
+    @FXML
+    private TableColumn<Transaccion, String> columCodigo;
+    @FXML
+    private TableColumn<Transaccion, String>columCedulaFactura;
+    @FXML
+    private TableColumn<Transaccion, String> columFecha;
+    @FXML
+    private TableColumn<Transaccion, Double>columTotal;
+//Buttons
     @FXML
     private Button btnVolver;
 
@@ -82,6 +115,8 @@ public class EmpleadoController implements Initializable {
     @FXML
     private Button btnEliminarAuto;
 
+
+//TXTFields de cliente
     @FXML
     private TextField txtNombreCliente;
     @FXML
@@ -89,8 +124,26 @@ public class EmpleadoController implements Initializable {
     @FXML
     private TextField txtCedulaCliente;
     @FXML
-    private TextField txtFechaNacimiento;
+    private DatePicker datePickerFechaNacimiento;
 
+//TxtFields de factura
+
+    @FXML
+    private TextField txtCodigo;
+    @FXML
+    private DatePicker datePickerFecha;
+    @FXML
+    private TextField txtTotal;
+    @FXML
+    private TextField txtDiasAlquiler;
+
+    @FXML
+    private TextField txtCedulaTransaccion;
+
+
+//TxtFields de vehiculo
+    @FXML
+    private TextField txtMarcaVehiculo;
     @FXML
     private TextField txtModeloVehiculo;
     @FXML
@@ -101,9 +154,6 @@ public class EmpleadoController implements Initializable {
 
     @FXML
     private TextField txt100km;
-
-    @FXML
-    private TextField txtMarcaVehiculo;
 
     @FXML
     private TextField txtCap_Maletero;
@@ -136,7 +186,11 @@ public class EmpleadoController implements Initializable {
     private TextField txtAutonomiaCarga;
     @FXML
     private TextField txtPromedioCarga;
+    @FXML
+    private TextField txtPrecio;
 
+
+//CheckBox de vehiculo
     @FXML
     private CheckBox checkAsistenteCarril;
     @FXML
@@ -165,6 +219,7 @@ public class EmpleadoController implements Initializable {
     @FXML
     private CheckBox checkEnchufable;
 
+//ComboBox's
     @FXML
     private ComboBox<TipoTransmicion> comboBoxTipoTransmicion;
     @FXML
@@ -172,6 +227,8 @@ public class EmpleadoController implements Initializable {
     @FXML
     private ComboBox<TipoEstado> comboBoxEstado;
 
+    @FXML
+    private ComboBox<TipoTransaccion> comboBoxTipoTransaccion;
     @FXML
     private ComboBox<TipoCombustible> comboBoxCombustible;
 
@@ -184,8 +241,17 @@ public class EmpleadoController implements Initializable {
 
 	private Aplicacion aplicacion;
 
+//Items seleccionados de sus respectivas tableView
 	private Cliente clienteSeleccion;
+	private Vehiculo vehiculoSeleccion;
+	private Transaccion transaccionSeleccion;
+
+	/*Las listas necesarias para que se muestren en su respectiva table view
+	 * */
 	ObservableList<Cliente> listaClientes= FXCollections.observableArrayList();
+	ObservableList<Vehiculo> listaVehiculos= FXCollections.observableArrayList();
+	ObservableList<Transaccion> listaTransacciones= FXCollections.observableArrayList();
+
 
 	private ObservableList<Cliente> getListaClientes(){
 		String idEmpleado= loginEmpleadoController.getTxtIdentificacionEmpleadp().getText();
@@ -194,7 +260,15 @@ public class EmpleadoController implements Initializable {
 		return listaClientes;
 
 	}
+	private ObservableList<Vehiculo> getListaVehiculos(){
+		listaVehiculos.addAll(singleton.getListaVehiculos());
+		return listaVehiculos;
+	}
 
+	private ObservableList<Transaccion> getListaTransacciones() {
+		listaTransacciones.addAll(concesionario.getListaTransacciones());
+		return listaTransacciones;
+	}
 
 	private boolean validarDatos(String nombre, String apellido, String cedula, String fechaNacimiento) {
 		String notificacion = "";
@@ -220,6 +294,296 @@ public class EmpleadoController implements Initializable {
 		return true;
 	}
 
+	/**
+	 * Este metodo lo que hace es verificar si los datos ingresados en la pestaña de gestion de vehiculos son valores validos, este verifica las variables
+	 * que comparten todos los vehiculos
+	 * Se tiene en cuenta que si el combustible es electrico hay que verificar que los atributos de autonomia y promedio de carga no pueden ser nulos
+	 * @param marca
+	 * @param modelo
+	 * @param cambios
+	 * @param velMaxima
+	 * @param transmicion
+	 * @param combustible
+	 * @param estado
+	 * @param precio
+	 * @param autonomia
+	 * @param tiempoPromedioCarga
+	 * @param esEnchufable
+	 * @param esHibridoLigero
+	 * @return
+	 */
+	private boolean verificarDatos(String marca, String modelo, String cambios, String velMaxima, TipoTransmicion transmicion, TipoCombustible combustible,
+			TipoEstado estado, Double precio, String autonomia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero ){
+
+
+		String notificacion= "";
+
+		if (marca==null || marca.equals("")) {
+			notificacion+= "Marca invalida\n";
+		}
+		if (modelo==null || modelo.equals("")) {
+			notificacion+= "Modelo invalido\n";
+		}
+		if (cambios==null || cambios.equals("")) {
+			notificacion+= "Cambios invalidos\n";
+		}
+		if (velMaxima.equals("") || velMaxima== null) {
+			notificacion+= "La velocidad maxima no puede ser negativa ni nula\n";
+		}
+		if (transmicion==null || transmicion.equals("")) {
+			notificacion+= "Seleccione una transmicion\n";
+		}
+		if (combustible==null || combustible.equals("")) {
+			notificacion+= "Seleccione un tipo de combustible\n";
+		}else if (combustible==TipoCombustible.ELECTRICO) {
+
+			if (autonomia==null || autonomia.equals("")) {
+					notificacion+= "Autonomia invalida";
+			}
+
+			if (tiempoPromedioCarga==null || tiempoPromedioCarga.equals("")) {
+				notificacion+= "Tiempo promedio de carga invalido";
+			}
+		}
+
+		if (estado==null || estado.equals("")) {
+			notificacion+= "Seleccione el estado del vehiculo\n";
+		}
+		if (precio<=0 || (precio+"").equals("") || (precio+"") == null) {
+			notificacion+= "El precio debe ser mayor que cero. No puede ser nulo\n";
+		}
+
+		if (!notificacion.equals("")) {
+			mostrarMensaje("Notificación", "Vehiculo no registrado", notificacion, AlertType.WARNING);
+			return false;
+		}
+
+		return true;
+
+
+	}
+
+	private boolean verificarDatosComunes(String  num_pasajeros, String num_Puertas,String num_Bolsas,String cilindraje){
+		String notificacion= "";
+		if (cilindraje==null || cilindraje.equals("")) {
+			notificacion+= "El cilindraje no puede estar vacio\n";
+		}
+
+		if ( num_pasajeros==null || num_pasajeros.equals("") ) {
+			notificacion+= "La cantidad de pasajeros debe ser mayor que 0\n";
+		}
+
+		if (num_Puertas==null || num_Puertas.equals("") ) {
+			notificacion+= "La cantidad de puertas debe ser mayor que 0\n";
+		}
+
+		if (num_Bolsas==null || num_Bolsas.equals("") ) {
+			notificacion+= "Las bolsas de aire deben ser mayores que 0\n";
+		}
+		if (!notificacion.equals("")) {
+			mostrarMensaje("Notificación", "Vehiculo no registrado", notificacion, AlertType.WARNING);
+			return false;
+		}
+
+
+		return true;
+	}
+
+	/**
+	 * Este metodo verifica que la informacion ingresada para el tipo de vehiculo sedan sea valida, revisa que los valores que requieran de una cantidad sean valores positivos mayores que cero, tambien llama inicialemente a la funcion de verificarDatos para comprobar que los datos genericos sean correctos
+	 * @param marca
+	 * @param modelo
+	 * @param cambios
+	 * @param velMaxima
+	 * @param cilindraje
+	 * @param transmicion
+	 * @param combustible
+	 * @param estado
+	 * @param precio
+	 * @param autonomia
+	 * @param tiempoPromedioCarga
+	 * @param esEnchufable
+	 * @param esHibridoLigero
+	 * @param num_pasajeros
+	 * @param num_Puertas
+	 * @param cap_Maletero
+	 * @param aire_Acondicionado
+	 * @param cam_Reversa
+	 * @param num_Bolsas
+	 * @param abs
+	 * @param sen_Colision
+	 * @param sen_Trafico_Cruzado
+	 * @param asistente_Carril
+	 * @return
+	 */
+	private boolean verificarDatosSedan(String marca, String modelo, String cambios, String velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonomia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero,
+			String  num_pasajeros, String num_Puertas, String cap_Maletero, boolean aire_Acondicionado, boolean cam_Reversa,
+			String num_Bolsas, boolean abs, boolean sen_Colision, boolean sen_Trafico_Cruzado, boolean asistente_Carril){
+
+
+		String notificacion= "";
+		if (verificarDatos(marca, modelo, cambios, velMaxima, transmicion, combustible, estado, precio, autonomia, tiempoPromedioCarga,
+				esEnchufable, esHibridoLigero)) {
+			if (verificarDatosComunes(num_pasajeros, num_Puertas, num_Bolsas, cilindraje)) {
+				if ( cap_Maletero==null || cap_Maletero.equals("") ) {
+					notificacion+= "La capacidad del maletero debe de ser mayor que 0\n";
+				}
+			}
+		}
+		if (!notificacion.equals("")) {
+			mostrarMensaje("Notificación", "Vehiculo no registrado", notificacion, AlertType.WARNING);
+			return false;
+		}
+		return true;
+	}
+
+
+
+	private boolean verificarDatosDeportivo(String marca, String modelo, String cambios, String  velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonimia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero,
+			String  num_pasajeros, String num_Puertas, String num_Bolsas, String num_Caballos_Fuerza, String tiempo_en_100KM){
+
+		String notificacion="";
+		if (verificarDatos(marca, modelo, cambios, velMaxima, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga, esEnchufable, esHibridoLigero)) {
+
+			if (verificarDatosComunes(num_pasajeros, num_Puertas, num_Bolsas, cilindraje)) {
+				if (num_Caballos_Fuerza==null || num_Caballos_Fuerza.equals("") ) {
+					notificacion+= "Los caballos de fuerza deben de ser mayores que 0\n";
+				}
+				if (tiempo_en_100KM==null || tiempo_en_100KM.equals("")) {
+					notificacion+= "El tiempo en el que alcanza los 100 k/H debe de ser mayor que 0";
+				}
+			}
+		}
+		if (!notificacion.equals("")) {
+			mostrarMensaje("Notificación", "Vehiculo no registrado", notificacion, AlertType.WARNING);
+			return false;
+		}
+
+		return true;
+	}
+
+
+	private boolean  verificarDatosCamioneta(String marca, String modelo, String cambios, String velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonimia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero,
+			String  num_pasajeros, String num_Puertas, String cap_Maletero, boolean aire_Acondicionado, boolean cam_Reversa,
+			String num_Bolsas, boolean abs, boolean sen_Colision, boolean sen_Trafico_Cruzado, boolean asistente_Carril,
+			boolean esCuatroxCuatro) {
+
+		return verificarDatosSedan(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga, esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs, sen_Colision, sen_Trafico_Cruzado, asistente_Carril);
+	}
+
+	private boolean verificarDatosPickUp(String marca, String modelo, String cambios, String  velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonimia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero,
+			String num_pasajeros, String num_Puertas, String num_Bolsas, String capacidadCarga, boolean aire_Acondicionado,
+			boolean cam_Reversa, boolean vel_Crucero, boolean abs, boolean esCuatroPorCuatro) {
+
+		String notificacion="";
+
+		if (verificarDatos(marca, modelo, cambios, velMaxima, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga, esEnchufable, esHibridoLigero)) {
+			if (verificarDatosComunes(num_pasajeros, num_Puertas, num_Bolsas, cilindraje)) {
+				if (capacidadCarga==null || capacidadCarga.equals("")  ) {
+					notificacion+= "La capacidad de carga debe de ser mayor a 0\n";
+				}
+			}
+		}
+		if (!notificacion.equals("")) {
+			mostrarMensaje("Notificación", "Vehiculo no registrado", notificacion, AlertType.WARNING);
+			return false;
+		}
+
+		return true;
+	}
+
+
+	private boolean verificarDatosVan(String marca, String modelo, String cambios, String  velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonimia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero,
+			String num_pasajeros, String num_Puertas, String cap_Maletero, boolean aire_Acondicionado, boolean cam_Reversa,
+			String num_Bolsas, boolean abs) {
+		String notificacion="";
+
+		if (verificarDatos(marca, modelo, cambios, velMaxima, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga, esEnchufable, esHibridoLigero)) {
+			if (verificarDatosComunes(num_pasajeros, num_Puertas, num_Bolsas, cilindraje)) {
+				if (cap_Maletero==null || cap_Maletero.equals("")  ) {
+					notificacion+= "La capacidad de carga debe de ser mayor a 0\n";
+				}
+			}
+		}
+		if (!notificacion.equals("")) {
+			mostrarMensaje("Notificación", "Vehiculo no registrado", notificacion, AlertType.WARNING);
+			return false;
+		}
+
+
+
+		return true;
+	}
+
+	private boolean verificarDatosBus(String marca, String modelo, String cambios, String velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonimia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero,
+			String num_pasajeros, String num_Puertas, String cap_Maletero, boolean aire_Acondicionado, boolean cam_Reversa,
+			boolean vel_Crucero, String num_Bolsas, boolean abs, String num_ejes, String num_salidas_emergencia){
+
+		String notificacion="";
+
+		if (verificarDatos(marca, modelo, cambios, velMaxima, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga, esEnchufable, esHibridoLigero)) {
+			if (verificarDatosComunes(num_pasajeros, num_Puertas, num_Bolsas, cilindraje)) {
+
+				if (num_ejes==null || num_ejes.equals("")) {
+					notificacion+= "El número de ejes debe de ser mayor a 0\n";
+				}
+				if (cap_Maletero==null || cap_Maletero.equals("")  ) {
+					notificacion+= "La capacidad del maletero debe de ser mayor a 0\n";
+				}
+				if (num_salidas_emergencia==null || num_salidas_emergencia.equals("")) {
+					notificacion+= "Las salidas de emergencia deben de ser mayores que cero";
+				}
+			}
+		}
+		if (!notificacion.equals("")) {
+			mostrarMensaje("Notificación", "Vehiculo no registrado", notificacion, AlertType.WARNING);
+			return false;
+		}
+
+
+
+		return true;
+	}
+
+	private boolean verificarDatosCamion(String marca, String modelo, String cambios, String  velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonimia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero,
+			boolean aire_Acondicionado, boolean abs, String num_ejes, String tipo_Camion) {
+		String notificacion= "";
+		if (verificarDatos(marca, modelo, cambios, velMaxima, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga, esEnchufable, esHibridoLigero)) {
+
+			if (num_ejes==null || num_ejes.equals("")) {
+				notificacion+= "El número de ejes debe de ser mayor a 0\n";
+			}
+
+			if (cilindraje== null || cilindraje.equals("")) {
+				notificacion+= "El cilindraje no puede estar vacio";
+			}
+			if (tipo_Camion==null || tipo_Camion.equals("")) {
+				notificacion+= "Indique el tipo de camion";
+			}
+		}
+		if (!notificacion.equals("")) {
+			mostrarMensaje("Notificación", "Vehiculo no registrado", notificacion, AlertType.WARNING);
+			return false;
+		}
+
+		return true;
+	}
+
+
 
 	public void mostrarMensaje(String titulo, String header, String contenido, AlertType alertype) {
 		Alert alert = new Alert(alertype);
@@ -232,9 +596,7 @@ public class EmpleadoController implements Initializable {
 
     @FXML
     void nuevoCliente(ActionEvent event) {
-
-
-
+    	limpiarInfoCliente(event);
     }
 
 
@@ -243,7 +605,8 @@ public class EmpleadoController implements Initializable {
 		String nombre= txtNombreCliente.getText();
 		String apellido= txtApellidoCliente.getText();
 		String cedula= txtCedulaCliente.getText();
-		String fechaNacimiento= txtFechaNacimiento.getText();
+		LocalDate date= datePickerFecha.getValue();
+		String fechaNacimiento= date.toString();
 
 		String idEmpleado= loginEmpleadoController.getTxtIdentificacionEmpleadp().getText();
 
@@ -269,14 +632,12 @@ public class EmpleadoController implements Initializable {
     	String nombre= txtNombreCliente.getText();
     	String apellido= txtApellidoCliente.getText();
     	String cedula= txtCedulaCliente.getText();
-    	String fechaNacimiento= txtFechaNacimiento.getText();
+    	LocalDate date= datePickerFechaNacimiento.getValue();
+    	String fechaNacimiento= date.toString();
     	String idEmpleado= loginEmpleadoController.getTxtIdentificacionEmpleadp().getText();
     	if (validarDatos(nombre,apellido,cedula,fechaNacimiento)) {
     		crearCliente(idEmpleado,nombre,apellido,cedula,fechaNacimiento);
-    		txtNombreCliente.setText("");
-    		txtApellidoCliente.setText("");
-    		txtCedulaCliente.setText("");
-    		txtFechaNacimiento.setText("");
+    		limpiarInfoCliente(event);
 
 		}
     }
@@ -297,7 +658,7 @@ public class EmpleadoController implements Initializable {
     	txtNombreCliente.setText("");
     	txtApellidoCliente.setText("");
     	txtCedulaCliente.setText("");
-    	txtFechaNacimiento.setText("");
+    	datePickerFechaNacimiento.setValue(null);
     	clienteSeleccion=null;
     }
 
@@ -328,7 +689,7 @@ public class EmpleadoController implements Initializable {
     void seleccionVehiculo(ActionEvent event) {
 
     	TipoVehiculo vehiculoSeleccionado= comboBoxTipoVehiculo.getSelectionModel().getSelectedItem();
-    	TipoCombustible combustibleSeleccionadoCombustible= comboBoxCombustible.getSelectionModel().getSelectedItem();
+
 
     	//Revisa si el vehiculo es una moto para solo habilitar los campos que necesitan
     	if (vehiculoSeleccionado.equals(TipoVehiculo.MOTO)) {
@@ -338,6 +699,8 @@ public class EmpleadoController implements Initializable {
     		txtCant_CambioVehiculo.setDisable(false);
     		txtCilindraje.setDisable(false);
     		txtVelMaxima.setDisable(false);
+
+
     		//Seteo los campos de texto que no utiliza este tipo de vehiculo
 			txtNum_bolsas.setDisable(true);
 			txtCap_Maletero.setDisable(true);
@@ -468,7 +831,6 @@ public class EmpleadoController implements Initializable {
 		    txtCaballosFuerza.setDisable(true);
 		    txtSalidasEmergencia.setDisable(true);
 		    txt100km.setDisable(true);
-		    txtMarcaVehiculo.setDisable(true);
 		    txtCap_Maletero.setDisable(true);
 		    txtTipoCamion.setDisable(true);
 		    txtNumEjes.setDisable(true);
@@ -478,8 +840,7 @@ public class EmpleadoController implements Initializable {
 		    checkSensColision.setDisable(true);
 		    checkSensTrafico.setDisable(true);
 		    checkVelCrucer.setDisable(true);
-		    chekHibridoLigero.setDisable(true);
-		    checkEnchufable.setDisable(true);
+
 		}
 
     	if (vehiculoSeleccionado.equals(TipoVehiculo.VAN)) {
@@ -504,8 +865,7 @@ public class EmpleadoController implements Initializable {
 		    checkCuatroPorCuatro.setDisable(true);
 		    checkSensTrafico.setDisable(true);
 		    checkVelCrucer.setDisable(true);
-		    chekHibridoLigero.setDisable(true);
-		    checkEnchufable.setDisable(true);
+
 
     	    //txt innecesarios
 		    txtCaballosFuerza.setDisable(true);
@@ -514,8 +874,7 @@ public class EmpleadoController implements Initializable {
 		    txtTipoCamion.setDisable(true);
 		    txtCapacidadCarga.setDisable(true);
 		    txtNumEjes.setDisable(true);
-		    txtAutonomiaCarga.setDisable(true);
-		    txtPromedioCarga.setDisable(true);
+
 		}
     	if (vehiculoSeleccionado.equals(TipoVehiculo.BUS)) {
     		//Txtfields necesarios
@@ -542,8 +901,7 @@ public class EmpleadoController implements Initializable {
 		    checkCuatroPorCuatro.setDisable(true);
 		    checkSensTrafico.setDisable(true);
 		    checkVelCrucer.setDisable(true);
-		    chekHibridoLigero.setDisable(true);
-		    checkEnchufable.setDisable(true);
+
 
 			//txtFields innecesarios
 		    txtCaballosFuerza.setDisable(true);
@@ -551,15 +909,14 @@ public class EmpleadoController implements Initializable {
 		    txtTipoCamion.setDisable(true);
 		    txtNum_bolsas.setDisable(false);;
 		    txtCapacidadCarga.setDisable(true);
-		    txtAutonomiaCarga.setDisable(true);
-		    txtPromedioCarga.setDisable(true);
+
 		}
 
 
     	if (vehiculoSeleccionado.equals(TipoVehiculo.CAMION)) {
 
     		//txtFields necesarios
-    		txtMarcaVehiculo.setDisable(true);
+    		txtMarcaVehiculo.setDisable(false);
 			txtModeloVehiculo.setDisable(false);
 			txtCant_CambioVehiculo.setDisable(false);
 			txtVelMaxima.setDisable(false);
@@ -578,8 +935,7 @@ public class EmpleadoController implements Initializable {
 		    txtNumPasajeros.setDisable(true);
 		    txtNum_bolsas.setDisable(false);;
 		    txtNumPuertas.setDisable(true);;
-		    txtAutonomiaCarga.setDisable(true);
-		    txtPromedioCarga.setDisable(true);
+
 		    //checkBox innecesarios
 		    checkAsistenteCarril.setDisable(true);
 		    checkSensColision.setDisable(true);
@@ -587,24 +943,334 @@ public class EmpleadoController implements Initializable {
 		    checkCuatroPorCuatro.setDisable(true);
 		    checkSensTrafico.setDisable(true);
 		    checkVelCrucer.setDisable(true);
-		    chekHibridoLigero.setDisable(true);
-		    checkEnchufable.setDisable(true);
-
 
     	}
+    }
+    /*
+     * Se obtiene el tipo de combustible que selecciono del comboBox, esto para habilitar o inhabilitar los diferentes campos de texto
+     *
+     * */
+    @FXML
+    void seleccionCombustible(ActionEvent event) {
+    	TipoCombustible combustibleSeleccionado= comboBoxCombustible.getSelectionModel().getSelectedItem();
+
+    	if (combustibleSeleccionado.equals(TipoCombustible.DIESEL) || combustibleSeleccionado.equals(TipoCombustible.DIESEL) ) {
+
+    		//TxtFields no necesarios
+    		txtAutonomiaCarga.setDisable(true);
+	    	txtPromedioCarga.setDisable(true);
+	    	//checkBos no necesaario
+	    	chekHibridoLigero.setDisable(true);
+	    	checkEnchufable.setDisable(true);
+		}
+
+    	if (combustibleSeleccionado.equals(TipoCombustible.ELECTRICO)) {
+
+    		//TxtFields necesarios
+    		txtAutonomiaCarga.setDisable(false);
+	    	txtPromedioCarga.setDisable(false);
+	    	//checkBox no necesarios
+	    	chekHibridoLigero.setDisable(true);
+	    	checkEnchufable.setDisable(true);
+		}
+
+    	if (combustibleSeleccionado.equals(TipoCombustible.HIBRIDO)) {
+
+    		//TxtFields innecesarios
+    		txtAutonomiaCarga.setDisable(true);
+	    	txtPromedioCarga.setDisable(true);
+	    	//Check necesario
+	    	checkEnchufable.setDisable(false);
+
+	    	//Si es enchufable significa no se necesita saber si es hibrido ligero o no, en cambio si no es enchufable hay que indicar si es hibrido ligero
+	    	   checkEnchufable.selectedProperty().addListener((observable, oldValue, newValue) -> {
+	               if (newValue) {
+	            	   chekHibridoLigero.setDisable(true);
+	               } else {
+	            	   chekHibridoLigero.setDisable(false);
+	               }
+	           });
+
+		}
+
 
     }
 
 
     @FXML
-    void registrarVehiculo(ActionEvent event) {
+    void registrarVehiculo(ActionEvent event) throws EmpleadoException, VehiculoException {
+    	TipoVehiculo vehiculoSeleccionado= comboBoxTipoVehiculo.getSelectionModel().getSelectedItem();
+    	TipoTransmicion transmicion= comboBoxTipoTransmicion.getSelectionModel().getSelectedItem();
+    	TipoCombustible combustible= comboBoxCombustible.getSelectionModel().getSelectedItem();
+    	TipoEstado estado= comboBoxEstado.getSelectionModel().getSelectedItem();
+
+    	String idEmpleado= loginEmpleadoController.getTxtIdentificacionEmpleadp().getText();
+    	String marca= txtMarcaVehiculo.getText();
+    	String modelo= txtModeloVehiculo.getText();
+    	String cambios= txtCant_CambioVehiculo.getText();
+    	String cilindraje= txtCilindraje.getText();
+    	String autonomia= txtAutonomiaCarga.getText();
+    	String tiempoPromedioCarga= txtPromedioCarga.getText();
+    	String tipo_Camion= txtTipoCamion.getText();
+    	String velMaxima= txtVelMaxima.getText();
+    	String  num_Caballos_Fuerza= txtCaballosFuerza.getText();
+    	String tiempo_en_100KM= txt100km.getText();
+    	String num_pasajeros= txtNumPasajeros.getText();
+    	String num_Puertas= txtNumPuertas.getText();
+    	String  cap_Maletero= txtCap_Maletero.getText();
+    	String num_Bolsas= txtNum_bolsas.getText();
+    	String capacidadCarga= txtCapacidadCarga.getText();
+    	String num_ejes= txtNumEjes.getText();
+    	String num_salidas_emergencia= txtSalidasEmergencia.getText();
+
+    	Double precio= Double.parseDouble(txtPrecio.getText());
+
+    	boolean esEnchufable= checkEnchufable.isSelected();
+    	boolean esHibridoLigero= chekHibridoLigero.isSelected();
+    	boolean aire_Acondicionado= checkAireAcondicionado.isSelected();
+    	boolean abs= checkABS.isSelected();
+    	boolean sen_Colision= checkSensColision.isSelected();
+    	boolean sen_Trafico_Cruzado= checkSensTrafico.isSelected();
+    	boolean asistente_Carril= checkAsistenteCarril.isSelected();
+    	boolean cam_Reversa= checkCamReversa.isSelected();
+    	boolean esCuatroPorCuatro= checkCuatroPorCuatro.isSelected();
+    	boolean vel_Crucero= checkVelCrucer.isSelected();
+
+
+		if (vehiculoSeleccionado!=null) {
+	    	switch (vehiculoSeleccionado) {
+			case MOTO:
+				if (verificarDatos(marca, modelo, cambios, velMaxima, transmicion, combustible, estado, precio, autonomia, tiempoPromedioCarga, esEnchufable, esHibridoLigero)) {
+					crearMoto(idEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonomia, tiempoPromedioCarga, esEnchufable, esHibridoLigero);
+					setearCamposDeVehiculo();
+				}
+				break;
+			case SEDAN:
+				if (verificarDatosSedan(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonomia,
+						 tiempoPromedioCarga, esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa,
+						 num_Bolsas, abs, sen_Colision, sen_Trafico_Cruzado, asistente_Carril)) {
+					 crearSedan(idEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonomia, tiempoPromedioCarga, esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs, sen_Colision, sen_Trafico_Cruzado, asistente_Carril);
+					 setearCamposDeVehiculo();
+				}
+				break;
+			case DEPORTIVO:
+				if (verificarDatosDeportivo(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonomia, tiempoPromedioCarga, esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, num_Bolsas, num_Caballos_Fuerza, tiempo_en_100KM)) {
+					crearDeportivo(idEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonomia, tiempoPromedioCarga, esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, num_Bolsas, num_Caballos_Fuerza, tiempo_en_100KM);
+					setearCamposDeVehiculo();
+				}
+				break;
+			case CAMIONETA:
+				if (verificarDatosCamioneta(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonomia, tiempoPromedioCarga, esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs, sen_Colision, sen_Trafico_Cruzado, asistente_Carril, esCuatroPorCuatro)) {
+					crearCamioneta(idEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonomia, tiempoPromedioCarga, esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs, sen_Colision, sen_Trafico_Cruzado, asistente_Carril, esCuatroPorCuatro);
+					setearCamposDeVehiculo();
+				}
+				break;
+			case PICKUP:
+				if (verificarDatosPickUp(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonomia, tiempoPromedioCarga, esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, num_Bolsas, capacidadCarga, aire_Acondicionado, cam_Reversa, vel_Crucero, abs, esCuatroPorCuatro)) {
+					crearPickUp(idEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonomia, tiempoPromedioCarga, esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, num_Bolsas, capacidadCarga, aire_Acondicionado, cam_Reversa, vel_Crucero, abs, esCuatroPorCuatro);
+					setearCamposDeVehiculo();
+				}
+				break;
+			case VAN:
+				if (verificarDatosVan(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonomia, tiempoPromedioCarga, esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs)) {
+					crearVan(idEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonomia, tiempoPromedioCarga, esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs);
+					setearCamposDeVehiculo();
+				}
+				break;
+			case BUS:
+				if (verificarDatosBus(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonomia, tiempoPromedioCarga, esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, vel_Crucero, num_Bolsas, abs, num_ejes, num_salidas_emergencia)) {
+					crearBus(idEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonomia, tiempoPromedioCarga, esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, vel_Crucero, num_Bolsas, abs, num_ejes, num_salidas_emergencia);
+					setearCamposDeVehiculo();
+				}
+				break;
+			case CAMION:
+				if (verificarDatosCamion(marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonomia, tiempoPromedioCarga, esEnchufable, esHibridoLigero, aire_Acondicionado, abs, num_ejes, tipo_Camion)) {
+					crearCamion(idEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonomia, tiempoPromedioCarga, esEnchufable, esHibridoLigero, aire_Acondicionado, abs, num_ejes, tipo_Camion);
+					setearCamposDeVehiculo();
+				}
+				break;
+			default:
+				mostrarMensaje("Selección vehiculo", "Vehiculo no seleccionado", "Por favor, asegurese de seleccionar un tipo de vehiculo", AlertType.WARNING);
+				setearCamposDeVehiculo();
+				break;
+			}
+		}else {
+			mostrarMensaje("Selección vehiculo", "Vehiculo no seleccionado", "Por favor, asegurese de seleccionar un tipo de vehiculo", AlertType.WARNING);
+		}
+    }
+    private void setearCamposDeVehiculo() {
+      	TipoVehiculo vehiculoSeleccionado= comboBoxTipoVehiculo.getSelectionModel().getSelectedItem();
+    	TipoTransmicion transmicion= comboBoxTipoTransmicion.getSelectionModel().getSelectedItem();
+    	TipoCombustible combustible= comboBoxCombustible.getSelectionModel().getSelectedItem();
+    	TipoEstado estado= comboBoxEstado.getSelectionModel().getSelectedItem();
+
+    	txtMarcaVehiculo.setText("");
+    	txtModeloVehiculo.setText("");
+    	txtCant_CambioVehiculo.setText("");
+    	txtCilindraje.setText("");
+    	txtAutonomiaCarga.setText("");
+    	txtPromedioCarga.setText("");
+    	txtTipoCamion.setText("");
+
+    	txtPrecio.setText("");
+    	txtCaballosFuerza.setText("");
+    	txt100km.setText("");
+    	txtVelMaxima.setText("");
+
+    	checkEnchufable.setSelected(false);
+    	chekHibridoLigero.setSelected(false);
+    	checkAireAcondicionado.setSelected(false);
+    	checkABS.setSelected(false);
+    	checkSensColision.setSelected(false);
+    	checkSensTrafico.setSelected(false);
+    	checkAsistenteCarril.setSelected(false);
+    	checkCamReversa.setSelected(false);
+    	checkCuatroPorCuatro.setSelected(false);
+    	checkVelCrucer.setSelected(false);
+
+    	txtNumPasajeros.setText("");
+    	txtNumPuertas.setText("");
+    	txtCap_Maletero.setText("");
+    	txtNum_bolsas.setText("");
+    	txtCapacidadCarga.setText("");
+    	txtNumEjes.setText("");
+    	txtSalidasEmergencia.setText("");
+	}
+
+    private void crearMoto(String identificacionEmpleado, String marca, String modelo, String cambios, String velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio, String autonomia, String tiempoPromedioCarga,
+			boolean esEnchufable, boolean esHibridoLigero) throws EmpleadoException, VehiculoException{
+
+    	if (singleton.crearMoto(identificacionEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonomia, tiempoPromedioCarga, esEnchufable, esHibridoLigero)) {
+    		tableViewVehiculos.getItems().clear();
+    		tableViewVehiculos.setItems(getListaVehiculos());
+    		mostrarMensaje("Notificación vehiculo", "Vehiculo registrado", "El vehiculo ha sido registrado con exito", AlertType.INFORMATION);
+		}else {
+			mostrarMensaje("Notificación vehiculo", "Vehiculo no registrado", "El vehiculo no se ha podido registrar", AlertType.INFORMATION);
+		}
 
     }
+    private void crearSedan(String identificacionEmpleado,String marca, String modelo, String cambios, String velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonimia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero,
+			String num_pasajeros, String num_Puertas, String cap_Maletero, boolean aire_Acondicionado, boolean cam_Reversa,
+			String num_Bolsas, boolean abs, boolean sen_Colision, boolean sen_Trafico_Cruzado, boolean asistente_Carril) throws VehiculoException, EmpleadoException{
+
+    	if (singleton.crearSedan(identificacionEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga, esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs, sen_Colision, sen_Trafico_Cruzado, asistente_Carril)) {
+
+    		tableViewVehiculos.getItems().clear();
+    		tableViewVehiculos.setItems(getListaVehiculos());
+    		mostrarMensaje("Notificación vehiculo", "Vehiculo registrado", "El vehiculo ha sido registrado con exito", AlertType.INFORMATION);
+		}else {
+			mostrarMensaje("Notificación vehiculo", "Vehiculo no registrado", "El vehiculo no se ha podido registrar", AlertType.INFORMATION);
+		}
+
+    }
+    private void crearDeportivo(String identificacionEmpleado,String marca, String modelo, String cambios, String velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonimia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero,
+			String num_pasajeros, String num_Puertas, String num_Bolsas, String num_Caballos_Fuerza, String tiempo_en_100KM) throws EmpleadoException, VehiculoException{
+
+    	if (singleton.crearDeportivo(identificacionEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga, esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, num_Bolsas, num_Caballos_Fuerza, tiempo_en_100KM)) {
+    		tableViewVehiculos.getItems().clear();
+    		tableViewVehiculos.setItems(getListaVehiculos());
+    		mostrarMensaje("Notificación vehiculo", "Vehiculo registrado", "El vehiculo ha sido registrado con exito", AlertType.INFORMATION);
+		}else {
+			mostrarMensaje("Notificación vehiculo", "Vehiculo no registrado", "El vehiculo no se ha podido registrar", AlertType.INFORMATION);
+		}
+
+    }
+    private void crearCamioneta(String identificacionEmpleado,String marca, String modelo, String cambios, String velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonimia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero,
+			String  num_pasajeros, String num_Puertas, String cap_Maletero, boolean aire_Acondicionado, boolean cam_Reversa,
+			String num_Bolsas, boolean abs, boolean sen_Colision, boolean sen_Trafico_Cruzado, boolean asistente_Carril,
+			boolean esCuatroxCuatro) throws VehiculoException, EmpleadoException{
+
+    	if (singleton.crearCamioneta(identificacionEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga, esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs, sen_Colision, sen_Trafico_Cruzado, asistente_Carril, esCuatroxCuatro)) {
+
+    		tableViewVehiculos.getItems().clear();
+    		tableViewVehiculos.setItems(getListaVehiculos());
+    		mostrarMensaje("Notificación vehiculo", "Vehiculo registrado", "El vehiculo ha sido registrado con exito", AlertType.INFORMATION);
+		}else {
+			mostrarMensaje("Notificación vehiculo", "Vehiculo no registrado", "El vehiculo no se ha podido registrar", AlertType.INFORMATION);
+		}
 
 
+    }
+    private void crearPickUp(String identificacionEmpleado, String marca, String modelo, String cambios, String velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonimia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero,
+			String num_pasajeros, String num_Puertas, String num_Bolsas, String capacidadCarga, boolean aire_Acondicionado,
+			boolean cam_Reversa, boolean vel_Crucero, boolean abs, boolean esCuatroPorCuatro) throws EmpleadoException, VehiculoException{
+
+    	if (singleton.crearPickUp(identificacionEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga, esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, num_Bolsas, capacidadCarga, aire_Acondicionado, cam_Reversa, vel_Crucero, abs, esCuatroPorCuatro)) {
+
+    		tableViewVehiculos.getItems().clear();
+    		tableViewVehiculos.setItems(getListaVehiculos());
+    		mostrarMensaje("Notificación vehiculo", "Vehiculo registrado", "El vehiculo ha sido registrado con exito", AlertType.INFORMATION);
+		}else {
+			mostrarMensaje("Notificación vehiculo", "Vehiculo no registrado", "El vehiculo no se ha podido registrar", AlertType.INFORMATION);
+		}
+
+    }
+    private void crearVan(String identificacionEmpleado, String marca, String modelo, String cambios, String  velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonimia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero,
+			String num_pasajeros, String num_Puertas, String cap_Maletero, boolean aire_Acondicionado, boolean cam_Reversa,
+			String num_Bolsas, boolean abs) throws EmpleadoException, VehiculoException{
+
+    	if (singleton.crearVan(identificacionEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga, esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, num_Bolsas, abs)) {
+
+    		tableViewVehiculos.getItems().clear();
+    		tableViewVehiculos.setItems(getListaVehiculos());
+    		mostrarMensaje("Notificación vehiculo", "Vehiculo registrado", "El vehiculo ha sido registrado con exito", AlertType.INFORMATION);
+		}else {
+			mostrarMensaje("Notificación vehiculo", "Vehiculo no registrado", "El vehiculo no se ha podido registrar", AlertType.INFORMATION);
+		}
+
+    }
+    private void crearBus(String identificacionEmpleado, String marca, String modelo, String cambios, String  velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonimia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero,
+			String num_pasajeros, String num_Puertas, String cap_Maletero, boolean aire_Acondicionado, boolean cam_Reversa,
+			boolean vel_Crucero, String num_Bolsas, boolean abs, String num_ejes, String num_salidas_emergencia) throws EmpleadoException, VehiculoException {
+    	if (singleton.crearBus(identificacionEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga, esEnchufable, esHibridoLigero, num_pasajeros, num_Puertas, cap_Maletero, aire_Acondicionado, cam_Reversa, vel_Crucero, num_Bolsas, abs, num_ejes, num_salidas_emergencia)) {
+
+    		tableViewVehiculos.getItems().clear();
+    		tableViewVehiculos.setItems(getListaVehiculos());
+    		mostrarMensaje("Notificación vehiculo", "Vehiculo registrado", "El vehiculo ha sido registrado con exito", AlertType.INFORMATION);
+		}else {
+			mostrarMensaje("Notificación vehiculo", "Vehiculo no registrado", "El vehiculo no se ha podido registrar", AlertType.INFORMATION);
+		}
+
+	}
+    private void crearCamion(String identificacionEmpleado, String marca, String modelo, String cambios, String velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonimia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero,
+			boolean aire_Acondicionado, boolean abs, String  num_ejes, String tipo_Camion) throws EmpleadoException, VehiculoException {
+    	if (singleton.crearCamion(identificacionEmpleado, marca, modelo, cambios, velMaxima, cilindraje, transmicion, combustible, estado, precio, autonimia, tiempoPromedioCarga, esEnchufable, esHibridoLigero, aire_Acondicionado, abs, num_ejes, tipo_Camion)) {
+
+    		tableViewVehiculos.getItems().clear();
+    		tableViewVehiculos.setItems(getListaVehiculos());
+    		mostrarMensaje("Notificación vehiculo", "Vehiculo registrado", "El vehiculo ha sido registrado con exito", AlertType.INFORMATION);
+		}else {
+			mostrarMensaje("Notificación vehiculo", "Vehiculo no registrado", "El vehiculo no se ha podido registrar", AlertType.INFORMATION);
+		}
+
+	}
     @FXML
     void venderAuto(ActionEvent event) {
+    	if (vehiculoSeleccion==null) {
 
+    		mostrarMensaje("Vehiculo Selección", "Selección de vehiculo", "Si quiere vender un vehiculo asegurese de seleccionarlo primero", AlertType.WARNING);
+    		  comboBoxTipoTransaccion.setDisable(true);
+		}else {
+			txtTotal.setText(vehiculoSeleccion.getPrecio()+"");
+		    comboBoxTipoTransaccion.getSelectionModel().select(TipoTransaccion.VENTA);
+		    comboBoxTipoTransaccion.setDisable(true);
+		    datePickerFecha.setValue(LocalDate.now());
+		}
     }
 
     @FXML
@@ -621,7 +1287,7 @@ public class EmpleadoController implements Initializable {
     @FXML
     void mostrarVentanPrincipal(ActionEvent event) {
     	this.stage.close();
-    	principioController.show();
+    	 loginEmpleadoController.show();
     }
 
     @FXML
@@ -646,27 +1312,66 @@ public class EmpleadoController implements Initializable {
  */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+
+		/*Añado los itemes al comboBox de vehiculosy tambien edito el texto para cuando no hay nada seleccionadp*/
 		comboBoxTipoVehiculo.getItems().addAll(TipoVehiculo.MOTO,TipoVehiculo.SEDAN,TipoVehiculo.PICKUP,
 				TipoVehiculo.DEPORTIVO,TipoVehiculo.CAMIONETA,TipoVehiculo.BUS,TipoVehiculo.CAMION,TipoVehiculo.VAN);
+		comboBoxTipoVehiculo.setPromptText("Vehiculos");
 
+		/*Añado los itemes al comboBox de transmiciones y tambien edito el texto para cuando no hay nada seleccionadp*/
 		comboBoxTipoTransmicion.getItems().addAll(TipoTransmicion.AUTOMATICA,TipoTransmicion.MANUAL);
+		comboBoxTipoTransmicion.setPromptText("Transmición del vehiculo");
 
+		/*Añado los itemes al comboBox de estado del vehiculo y tambien edito el texto para cuando no hay nada seleccionadp*/
 		comboBoxEstado.getItems().addAll(TipoEstado.NUEVO, TipoEstado.USADO);
-
+		comboBoxEstado.setPromptText("Estado del vehiculo");
+		/*Añado los itemes al comboBox de combustibles y tambien edito el texto para cuando no hay nada seleccionadp*/
 		comboBoxCombustible.getItems().addAll(TipoCombustible.DIESEL,TipoCombustible.GASOLINA, TipoCombustible.ELECTRICO,TipoCombustible.HIBRIDO);
+		comboBoxCombustible.setPromptText("Tipo de combustible");
 
+		/*Añado los itemes al comboBox de transacciones y tambien edito el texto para cuando no hay nada seleccionadp*/
+		comboBoxTipoTransaccion.getItems().addAll(TipoTransaccion.VENTA, TipoTransaccion.ALQUILER);
+		comboBoxTipoTransaccion.setPromptText("Tipo de transacción");
 
+		//Inicializar las columnas de la tableView de clientes
 		this.columNombreCliente.setCellValueFactory(new PropertyValueFactory<>("nombre"));
 		this.columApellidosCliente.setCellValueFactory(new PropertyValueFactory<>("apellido"));
-		this.columCedulaCliente.setCellValueFactory(new PropertyValueFactory<>("identficacion"));
-
+		this.columCedulaCliente.setCellValueFactory(new PropertyValueFactory<>("identificacion"));
+		/*Se usa para poder seleccionar un item de la tabla*/
 		tableViewClientes.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
 			if(newSelection != null){
 				clienteSeleccion= newSelection;
-				//mostrarInformacionCliente();
+			}
+		});
+		//Inicializar las columnas de la tableview de vehiculos
+		this.columMarca.setCellValueFactory(new PropertyValueFactory<>("marca"));
+		this.columModelo.setCellValueFactory(new PropertyValueFactory<>("modelo"));
+		this.columPrecio.setCellValueFactory(new PropertyValueFactory<>("precio"));
+
+		tableViewVehiculos.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+			if(newSelection != null){
+				vehiculoSeleccion= newSelection;
 			}
 		});
 
+		//Inicializar las columnas de las facturas de la tableView de transacciones
 
+		this.columTipoTransaccion.setCellValueFactory(new PropertyValueFactory<>("tipoTransaccion"));
+		this.columCodigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
+		this.columCedulaFactura.setCellValueFactory(new PropertyValueFactory<>("cedulaCliente"));
+		this.columFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+		this.columTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
+
+		tableViewTransaccion.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+			if(newSelection != null){
+				transaccionSeleccion= newSelection;
+				//mostrarInformacionCliente();
+			}
+		});
 	}
+
+
+
+
+
 }

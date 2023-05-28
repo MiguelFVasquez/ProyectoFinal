@@ -7,28 +7,65 @@ public class Vehiculo {
     private String marca;
     private String modelo;
     private String cambios;
-    private double velMaxima;
+    private String velMaxima;
     private String cilindraje;
     private TipoTransmicion transmicion;
     private TipoCombustible combustible;
     private TipoEstado estado;
+    private Double precio;
+
+    //Si es un vehiculo electrico
+    private String autonomia;
+    private String tiempoPromedioCarga;
+
+    //Si es un vehiculo hibirido
+    private boolean esEnchufable;
+    //Si no es enchufable
+    private boolean esHibridoLigero;
+
 
     public Vehiculo() {
     }
 
-    public Vehiculo(String marca, String modelo, String cambios, double velMaxima, String cilindraje,
-    		TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado) {
-        this.marca = marca;
-        this.modelo = modelo;
-        this.cambios = cambios;
-        this.velMaxima = velMaxima;
-        this.cilindraje = cilindraje;
-        this.transmicion= transmicion;
-        this.combustible= combustible;
-        this.estado= estado;
-    }
+    /**
+	 * @param marca
+	 * @param modelo
+	 * @param cambios
+	 * @param velMaxima
+	 * @param cilindraje
+	 * @param transmicion
+	 * @param combustible
+	 * @param estado
+	 * @param precio
+	 * @param autonimia
+	 * @param tiempoPromedioCarga
+	 * @param esEnchufable
+	 * @param esHibridoLigero
+	 */
+	public Vehiculo(String marca, String modelo, String cambios, String velMaxima, String cilindraje,
+			TipoTransmicion transmicion, TipoCombustible combustible, TipoEstado estado, Double precio,
+			String autonimia, String tiempoPromedioCarga, boolean esEnchufable, boolean esHibridoLigero) {
+		this.marca = marca;
+		this.modelo = modelo;
+		this.cambios = cambios;
+		this.velMaxima = velMaxima;
+		this.cilindraje = cilindraje;
+		this.transmicion = transmicion;
+		this.combustible = combustible;
+		this.estado = estado;
+		this.precio = precio;
+		this.autonomia = autonimia;
+		this.tiempoPromedioCarga = tiempoPromedioCarga;
+		this.esEnchufable = esEnchufable;
+		this.esHibridoLigero = esHibridoLigero;
+	}
 
-    public String getMarca() {
+
+
+
+
+
+	public String getMarca() {
         return marca;
     }
 
@@ -52,15 +89,25 @@ public class Vehiculo {
         this.cambios = cambios;
     }
 
-    public double getVelMaxima() {
-        return velMaxima;
-    }
 
-    public void setVelMaxima(double velMaxima) {
-        this.velMaxima = velMaxima;
-    }
 
-    public String getCilindraje() {
+    public String getVelMaxima() {
+		return velMaxima;
+	}
+
+	public void setVelMaxima(String velMaxima) {
+		this.velMaxima = velMaxima;
+	}
+
+	public String getAutonomia() {
+		return autonomia;
+	}
+
+	public void setAutonomia(String autonomia) {
+		this.autonomia = autonomia;
+	}
+
+	public String getCilindraje() {
         return cilindraje;
     }
 
@@ -92,6 +139,49 @@ public class Vehiculo {
 
 	public void setEstado(TipoEstado estado) {
 		this.estado = estado;
+	}
+
+
+
+
+	public Double getPrecio() {
+		return precio;
+	}
+
+	public void setPrecio(Double precio) {
+		this.precio = precio;
+	}
+
+	public String getAutonimia() {
+		return autonomia;
+	}
+
+	public void setAutonimia(String autonimia) {
+		this.autonomia = autonimia;
+	}
+
+	public String getTiempoPromedioCarga() {
+		return tiempoPromedioCarga;
+	}
+
+	public void setTiempoPromedioCarga(String tiempoPromedioCarga) {
+		this.tiempoPromedioCarga = tiempoPromedioCarga;
+	}
+
+	public boolean isEsEnchufable() {
+		return esEnchufable;
+	}
+
+	public void setEsEnchufable(boolean esEnchufable) {
+		this.esEnchufable = esEnchufable;
+	}
+
+	public boolean isEsHibridoLigero() {
+		return esHibridoLigero;
+	}
+
+	public void setEsHibridoLigero(boolean esHibridoLigero) {
+		this.esHibridoLigero = esHibridoLigero;
 	}
 
 	@Override
